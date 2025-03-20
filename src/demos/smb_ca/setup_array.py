@@ -70,6 +70,8 @@ fa.authenticate()
 
 if __name__ == '__main__':
     if len(sys.argv) > 1 and sys.argv[1] == "cleanup":
+        _logger.info(f"Cleaning up {FA_HOSTNAME} array ...")
         cleanup(fa)
     else:    
+        _logger.info(f"Configuring {FA_HOSTNAME} array ...")
         setup(fa)
