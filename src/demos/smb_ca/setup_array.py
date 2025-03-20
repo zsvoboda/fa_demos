@@ -30,7 +30,7 @@ def setup(fa):
     fa.create_file_system('smb_ca_file_system')
     fa.create_file_system('smb_no_ca_file_system')
 
-    fa.create_policy_smb(name='smb_ca_policy')
+    fa.create_policy_smb(name='smb_ca_policy',)
     fa.create_policy_smb_rule(policy_name='smb_ca_policy', client='*')
     fa.export_managed_directory_smb(policy_name='smb_ca_policy',
                                     managed_directory_name='smb_ca_file_system:root',

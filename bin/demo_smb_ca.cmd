@@ -5,7 +5,7 @@ setlocal
 set THIS_DIR=%~dp0
 set PYTHONPATH=%THIS_DIR%..\src
 
-for /f "delims=" %%x in (%THIS_DIR%..\..\.env) do set %%x
+for /f "delims=" %%x in (%THIS_DIR%..\.env) do set %%x
 
 python %PYTHONPATH%\demos\smb_ca\setup_array.py setup
 
