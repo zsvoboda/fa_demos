@@ -30,3 +30,6 @@ echo "File copied succesfully!"
 pause
 
 NET USE Z: /DELETE
+
+echo "Cleaning up..."
+python %PYTHONPATH%\demos\smb_ca\setup_array cleanup
