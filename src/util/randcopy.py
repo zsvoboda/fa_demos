@@ -4,10 +4,14 @@ import sys
 import logging
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-from log import setup_logging
 
+from log import setup_logging
 setup_logging()
 _logger = logging.getLogger(__name__)
+
+from env import load_env
+load_env()
+
 
 def randcopy(_size=1024*1024*1024, _out_file="output.bin"):
     with open(_out_file, "wb") as f:

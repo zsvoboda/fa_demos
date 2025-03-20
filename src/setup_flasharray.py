@@ -10,6 +10,10 @@ from log import setup_logging
 setup_logging()
 _logger = logging.getLogger(__name__)
 
+from env import load_env
+load_env()
+
+
 def setup(fa):
 
     # Create filesystem
