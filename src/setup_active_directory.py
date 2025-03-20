@@ -1,10 +1,12 @@
+import sys
 import socket
 import socks
 
 from ad.active_directory import ActiveDirectory
 
 import logging
-from log.log import setup_logging
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), ".")))
+from log import setup_logging
 
 setup_logging()
 _logger = logging.getLogger(__name__)

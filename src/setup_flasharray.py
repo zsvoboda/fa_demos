@@ -1,6 +1,14 @@
+import sys
 import os
 
 from fa.flash_array import FlashArray
+
+import logging
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+from log import setup_logging
+
+setup_logging()
+_logger = logging.getLogger(__name__)
 
 def setup(fa):
 

@@ -1,7 +1,9 @@
 import os
+import sys
 from ldap3 import Server, Connection, ALL, MODIFY_REPLACE, SUBTREE
 
 import logging
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from log import setup_logging
 
 setup_logging()

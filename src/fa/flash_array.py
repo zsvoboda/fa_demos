@@ -1,3 +1,4 @@
+import sys
 import pypureclient
 from pypureclient.flasharray import FileSystem, Directory, Pod, Policy, PolicyRuleNfsClient, PolicyRuleNfsClientPost, \
     PolicyRuleSmbClient, PolicyRuleSmbClientPost, PolicyRuleQuota, PolicyRuleQuotaPost, PolicyRuleSnapshot, \
@@ -5,6 +6,7 @@ from pypureclient.flasharray import FileSystem, Directory, Pod, Policy, PolicyRu
     PolicyMemberPost, PolicymemberpostMembers, LocalGroup, LocalUserPost, LocalUserPatch, PolicyNfsPost, ErrorResponse
 
 import logging
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from log import setup_logging
 
 setup_logging()
