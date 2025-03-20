@@ -8,7 +8,7 @@ import logging
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), ".")))
 from log import setup_logging
 
-from env import load_env
+from load_env import load_env
 load_env()
 
 
