@@ -304,17 +304,16 @@ class FlashArray:
         p = self.get_policy(policy_id=policy_id if policy_id else None,
                             policy_name=policy_name if policy_name else None)
         if p:
-            match p[0].policy_type:
-                case 'nfs':
-                    return self.delete_policy_nfs_rules(rule_name, policy_name, policy_id)
-                case 'smb':
-                    return self.delete_policy_smb_rules(rule_name, policy_name, policy_id)
-                case 'quota':
-                    return self.delete_policy_quota_rules(rule_name, policy_name, policy_id)
-                case 'snapshot':
-                    return self.delete_policy_snapshot_rules(rule_name, policy_name, policy_id)
-                case _:
-                    raise FlashArrayError(f"Policy type {p[0].policy_type}' is not supported yet.")
+            if p[0].policy_type == 'nfs':
+                return self.delete_policy_nfs_rules(rule_name, policy_name, policy_id)
+            elif p[0].policy_type == 'smb':
+                return self.delete_policy_smb_rules(rule_name, policy_name, policy_id)
+            elif p[0].policy_type == 'quota':
+                return self.delete_policy_quota_rules(rule_name, policy_name, policy_id)
+            elif p[0].policy_type == 'snapshot':
+                return self.delete_policy_snapshot_rules(rule_name, policy_name, policy_id)
+            else:
+                raise FlashArrayError(f"Policy type {p[0].policy_type}' is not supported yet.")
         else:
             raise FlashArrayError(f"Policy with name='{policy_name}' or id = '{policy_id}' not found.")
 
@@ -564,75 +563,72 @@ class FlashArray:
         p = self.get_policy(policy_id=policy_id if policy_id else None,
                             policy_name=policy_name if policy_name else None)
         if p:
-            match p[0].policy_type:
-                case 'nfs':
-                    return self.remove_managed_directory_nfs_policy(
-                        managed_directory_name=managed_directory_name if managed_directory_name else None,
-                        managed_directory_id=managed_directory_id if managed_directory_id else None,
-                        policy_name=policy_name if policy_name else None,
-                        policy_id=policy_id if policy_id else None)
-                case 'smb':
-                    return self.remove_managed_directory_smb_policy(
-                        managed_directory_name=managed_directory_name if managed_directory_name else None,
-                        managed_directory_id=managed_directory_id if managed_directory_id else None,
-                        policy_name=policy_name if policy_name else None,
-                        policy_id=policy_id if policy_id else None)
-                case 'quota':
-                    return self.remove_managed_directory_quota_policy(
-                        managed_directory_name=managed_directory_name if managed_directory_name else None,
-                        managed_directory_id=managed_directory_id if managed_directory_id else None,
-                        policy_name=policy_name if policy_name else None,
-                        policy_id=policy_id if policy_id else None)
-                case 'snapshot':
-                    return self.remove_managed_directory_snapshot_policy(
-                        managed_directory_name=managed_directory_name if managed_directory_name else None,
-                        managed_directory_id=managed_directory_id if managed_directory_id else None,
-                        policy_name=policy_name if policy_name else None,
-                        policy_id=policy_id if policy_id else None)
-                case 'autodir':
-                    return self.remove_managed_directory_autodir_policy(
-                        managed_directory_name=managed_directory_name if managed_directory_name else None,
-                        managed_directory_id=managed_directory_id if managed_directory_id else None,
-                        policy_name=policy_name if policy_name else None,
-                        policy_id=policy_id if policy_id else None)
-                case _:
-                    raise FlashArrayError(f"Policy type {p[0].policy_type}' is not supported yet.")
+            if p[0].policy_type == 'nfs':
+                return self.remove_managed_directory_nfs_policy(
+                    managed_directory_name=managed_directory_name if managed_directory_name else None,
+                    managed_directory_id=managed_directory_id if managed_directory_id else None,
+                    policy_name=policy_name if policy_name else None,
+                    policy_id=policy_id if policy_id else None)
+            elif p[0].policy_type == 'smb':
+                return self.remove_managed_directory_smb_policy(
+                    managed_directory_name=managed_directory_name if managed_directory_name else None,
+                    managed_directory_id=managed_directory_id if managed_directory_id else None,
+                    policy_name=policy_name if policy_name else None,
+                    policy_id=policy_id if policy_id else None)
+            elif p[0].policy_type == 'quota':
+                return self.remove_managed_directory_quota_policy(
+                    managed_directory_name=managed_directory_name if managed_directory_name else None,
+                    managed_directory_id=managed_directory_id if managed_directory_id else None,
+                    policy_name=policy_name if policy_name else None,
+                    policy_id=policy_id if policy_id else None)
+            elif p[0].policy_type == 'snapshot':
+                return self.remove_managed_directory_snapshot_policy(
+                    managed_directory_name=managed_directory_name if managed_directory_name else None,
+                    managed_directory_id=managed_directory_id if managed_directory_id else None,
+                    policy_name=policy_name if policy_name else None,
+                    policy_id=policy_id if policy_id else None)
+            elif p[0].policy_type == 'autodir':
+                return self.remove_managed_directory_autodir_policy(
+                    managed_directory_name=managed_directory_name if managed_directory_name else None,
+                    managed_directory_id=managed_directory_id if managed_directory_id else None,
+                    policy_name=policy_name if policy_name else None,
+                    policy_id=policy_id if policy_id else None)
+            else:
+                raise FlashArrayError(f"Policy type {p[0].policy_type}' is not supported yet.")
         else:
             raise FlashArrayError(f"Policy with name='{policy_name}' or id = '{policy_id}' not found.")
 
     def create_policy(self, name, policy_type, enabled=True):
-        match policy_type:
-            case 'nfs':
-                return self.create_policy_nfs(name, enabled)
-            case 'smb':
-                return self.create_policy_smb(name, enabled)
-            case 'quota':
-                return self.create_policy_quota(name, enabled)
-            case 'snapshot':
-                return self.create_policy_snapshot(name, enabled)
-            case 'autodir':
-                return self.create_policy_autodir(name, enabled)
-            case _:
-                raise FlashArrayError(f"Policy type {policy_type}' is not supported yet.")
+        if policy_type == 'nfs':
+            return self.create_policy_nfs(name, enabled)
+        elif policy_type == 'smb':
+            return self.create_policy_smb(name, enabled)
+        elif policy_type == 'quota':
+            return self.create_policy_quota(name, enabled)
+        elif policy_type == 'snapshot':
+            return self.create_policy_snapshot(name, enabled)
+        elif policy_type == 'autodir':
+            return self.create_policy_autodir(name, enabled)
+        else:
+            raise FlashArrayError(f"Policy type {policy_type}' is not supported yet.")
 
     def delete_policy(self, policy_id=None, policy_name=None):
         """Delete policy"""
         p = self.get_policy(policy_id=policy_id if policy_id else None,
                             policy_name=policy_name if policy_name else None)
         if p:
-            match p[0].policy_type:
-                case 'nfs':
-                    return self.delete_policy_nfs(policy_name)
-                case 'smb':
-                    return self.delete_policy_smb(policy_name)
-                case 'quota':
-                    return self.delete_policy_quota(policy_name)
-                case 'snapshot':
-                    return self.delete_policy_snapshot(policy_name)
-                case 'autodir':
-                    return self.delete_policy_autodir(policy_name)
-                case _:
-                    raise FlashArrayError(f"Policy type {p[0].policy_type}' is not supported yet.")
+            if p[0].policy_type == 'nfs':
+                return self.delete_policy_nfs(policy_name)
+            elif p[0].policy_type == 'smb':
+                return self.delete_policy_smb(policy_name)
+            elif p[0].policy_type == 'quota':
+                return self.delete_policy_quota(policy_name)
+            elif p[0].policy_type == 'snapshot':
+                return self.delete_policy_snapshot(policy_name)
+            elif p[0].policy_type == 'autodir':
+                return self.delete_policy_autodir(policy_name)
+            else:
+                raise FlashArrayError(f"Policy type {p[0].policy_type}' is not supported yet.")
         else:
             raise FlashArrayError(f"Policy with name='{policy_name}' or id = '{policy_id}' not found.")
 
