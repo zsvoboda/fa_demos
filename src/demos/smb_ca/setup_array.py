@@ -1,11 +1,12 @@
 import sys
 import os
 
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
+
 from fa.flash_array import FlashArray
 from pypureclient.flasharray import ReferenceWithType
 
 import logging
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 from log import setup_logging
 
 setup_logging()
