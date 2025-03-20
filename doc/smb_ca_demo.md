@@ -8,5 +8,6 @@ There are two shares defined on the array:
 
 
 ```bash
-purearray list
+purearray list --controller
+pureadm restart
 ```

@@ -17,7 +17,7 @@ NET USE Z: \\%FA_DEMO_HOSTNAME%\smb_no_ca /USER:%FA_DEMO_USER_NAME% %FA_DEMO_USE
 del /q Z:\*
 
 echo "Large file copy in progress on the non CA mapped drive ..."
-python %PYTHONPATH%\util\randcopy.py -n 10737418240 -d Z:\
+python %PYTHONPATH%\util\randcopy.py -n 10737418240 Z:\
 
 NET USE Z: /DELETE
 
@@ -26,7 +26,7 @@ NET USE Z: \\%FA_DEMO_HOSTNAME%\smb_ca /USER:%FA_DEMO_USER_NAME% %FA_DEMO_USER_P
 del /q Z:\*
 
 echo "Large file copy in progress on the CA mapped drive ..."
-python %PYTHONPATH%\util\randcopy.py -n 10737418240 -d Z:\
+python %PYTHONPATH%\util\randcopy.py -n 10737418240 Z:\
 
 echo "File copied succesfully!"
 pause
