@@ -9,7 +9,7 @@ The demo configures two SMB shares on the target FlashArray:
 - __smb_ca__: An SMB share with SMB CA enabled
 - __smb_no_ca__: An SMB share with SMB CA disabled
 
-You can watch the [SMB CA Demo Video](./video/SMB.Continuous.Availability.Demo.mp4) for a visual guide.
+You can watch the [SMB CA Demo Video](./video/FlashArray.SMB.Continuous.Availability.Demo.mp4) for a visual guide.
 
 ### Demo Steps:
 
