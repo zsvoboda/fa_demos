@@ -19,47 +19,104 @@ load_env()
 def setup(fa):
     
     # Create local user
-    fa.create_local_user(
-        name=os.getenv('FA_DEMO_USER_NAME', 'demo'), 
-        uid=1001, 
-        enabled=True,
-        primary_group=ReferenceWithType(name='Administrators'), 
-        password=os.getenv('FA_DEMO_USER_PASSWORD', 'password')
-    )
+    try:
+        fa.create_local_user(
+            name=os.getenv('FA_DEMO_USER_NAME', 'demo'), 
+            uid=1001, 
+            enabled=True,
+            primary_group=ReferenceWithType(name='Administrators'), 
+            password=os.getenv('FA_DEMO_USER_PASSWORD', 'password')
+        )
+    except Exception as e:
+        _logger.error(f"Error creating local user. Error message '{e}'.")
 
     # Create filesystem
-    fa.create_file_system('smb_ca_file_system')
-    fa.create_file_system('smb_no_ca_file_system')
-
-    fa.create_policy_smb(name='smb_ca_policy',)
-    fa.create_policy_smb_rule(policy_name='smb_ca_policy', client='*')
-    fa.export_managed_directory_smb(policy_name='smb_ca_policy',
-                                    managed_directory_name='smb_ca_file_system:root',
-                                    export_name='smb_ca')
+    try:
+        fa.create_file_system('smb_ca_file_system')
+    except Exception as e:
+        _logger.error(f"Error creating file system 'smb_ca_file_system'. Error message '{e}'.")
     
-    fa.create_policy_smb(name='smb_no_ca_policy')
-    fa.create_policy_smb_rule(policy_name='smb_no_ca_policy', client='*')
-    fa.export_managed_directory_smb(policy_name='smb_no_ca_policy',
-                                    managed_directory_name='smb_no_ca_file_system:root',
-                                    export_name='smb_no_ca')
+    try:
+        fa.create_file_system('smb_no_ca_file_system')
+    except Exception as e:
+        _logger.error(f"Error creating file system 'smb_no_ca_file_system'. Error message '{e}'.")
+
+    try:
+        fa.create_policy_smb(name='smb_ca_policy')
+    except Exception as e:
+        _logger.error(f"Error creating policy 'smb_ca_policy'. Error message '{e}'.")
+
+    try:
+        fa.create_policy_smb_rule(policy_name='smb_ca_policy', client='*')
+    except Exception as e:
+        _logger.error(f"Error creating policy rule for 'smb_ca_policy'. Error message '{e}'.")
+
+    try:
+        fa.export_managed_directory_smb(policy_name='smb_ca_policy',
+                                        managed_directory_name='smb_ca_file_system:root',
+                                        export_name='smb_ca')
+    except Exception as e:
+        _logger.error(f"Error exporting managed directory for 'smb_ca_policy'. Error message '{e}'.")
+
+    try:
+        fa.create_policy_smb(name='smb_no_ca_policy')
+    except Exception as e:
+        _logger.error(f"Error creating policy 'smb_no_ca_policy'. Error message '{e}'.")
+
+    try:
+        fa.create_policy_smb_rule(policy_name='smb_no_ca_policy', client='*')
+    except Exception as e:
+        _logger.error(f"Error creating policy rule for 'smb_no_ca_policy'. Error message '{e}'.")
+
+    try:
+        fa.export_managed_directory_smb(policy_name='smb_no_ca_policy',
+                                        managed_directory_name='smb_no_ca_file_system:root',
+                                        export_name='smb_no_ca')
+    except Exception as e:
+        _logger.error(f"Error exporting managed directory for 'smb_no_ca_policy'. Error message '{e}'.")
 
 def cleanup(fa):
 
     # Delete exports and policies
-    fa.delete_export(export_name='smb_ca', policy_name='smb_ca_policy')
-    fa.delete_export(export_name='smb_no_ca', policy_name='smn_no_ca_policy')
+    try:
+        fa.delete_export(export_name='smb_ca', policy_name='smb_ca_policy')
+    except Exception as e:
+        _logger.error(f"Error deleting export 'smb_ca'. Error message '{e}'.")
 
-    # Desytroy and erradicate file system
-    fa.destroy_file_system(name='smb_ca_file_system')
-    fa.eradicate_file_system(name='smb_ca_file_system')
-    fa.destroy_file_system(name='smb_no_ca_file_system')
-    fa.eradicate_file_system(name='smb_no_ca_file_system')
-    
-    # Delete file system
-    fa.delete_policy_smb(name='smb_ca_policy')
-    fa.delete_policy_smb(name='smb_no_ca_policy')
-    
-    fa.delete_local_user(name=os.getenv('FA_DEMO_USER_NAME', 'demo'))
+    try:
+        fa.delete_export(export_name='smb_no_ca', policy_name='smb_no_ca_policy')
+    except Exception as e:
+        _logger.error(f"Error deleting export 'smb_no_ca'. Error message '{e}'.")
+
+    # Destroy and eradicate file system
+    try:
+        fa.destroy_file_system(name='smb_ca_file_system')
+        fa.eradicate_file_system(name='smb_ca_file_system')
+    except Exception as e:
+        _logger.error(f"Error destroying or eradicating file system 'smb_ca_file_system'. Error message '{e}'.")
+
+    try:
+        fa.destroy_file_system(name='smb_no_ca_file_system')
+        fa.eradicate_file_system(name='smb_no_ca_file_system')
+    except Exception as e:
+        _logger.error(f"Error destroying or eradicating file system 'smb_no_ca_file_system'. Error message '{e}'.")
+
+    # Delete policies
+    try:
+        fa.delete_policy_smb(name='smb_ca_policy')
+    except Exception as e:
+        _logger.error(f"Error deleting policy 'smb_ca_policy'. Error message '{e}'.")
+
+    try:
+        fa.delete_policy_smb(name='smb_no_ca_policy')
+    except Exception as e:
+        _logger.error(f"Error deleting policy 'smb_no_ca_policy'. Error message '{e}'.")
+
+    # Delete local user
+    try:
+        fa.delete_local_user(name=os.getenv('FA_DEMO_USER_NAME', 'demo'))
+    except Exception as e:
+        _logger.error(f"Error deleting local user. Error message '{e}'.")
 
 
 # Setup connection to FlashArray
