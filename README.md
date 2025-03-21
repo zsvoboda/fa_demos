@@ -1,13 +1,15 @@
-# fa_demos
-FlashArray File Demos
 
+# FlashArray File Demos
 
-c7-sim551-vfa1-ct0
-c7-sim551-vfa1-ct1
-c7-sim551-vfa2-ct0
-c7-sim551-vfa2-ct1
+## Overview
+This repository contains demos for FlashArray File Services. Below are the components involved in the demos:
 
-c7-sim551-init1
-c7-sim551-init2
-c7-sim551-wc1
-c7-sim551-wc2
+## Usage
+To run the demos, follow the instructions provided in [this document](./doc/readme.md) and respective demo documentation in the [doc directory](./doc).
+
+## License
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+
+## Contact
+For any questions or issues, please open an issue in this repository.
+
