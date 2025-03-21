@@ -33,7 +33,7 @@ echo "Click any key to clean up..."
 pause
 
 echo "Cleaning up..."
-NET USE Z: /DELETE:YES
-NET USE Y: /DELETE:YES
+NET USE Z: /DELETE
+NET USE Y: /DELETE
 
 python %PYTHONPATH%\demos\smb_ca\setup_array.py cleanup
