@@ -40,8 +40,9 @@ if __name__ == '__main__':
         _logger.info("Usage: randcopy [-n size] [outputfile]")
         sys.exit(2)
     
-    _logger.info(f"Creating file {_out_file} of size {_size}.")
+    _logger.info(f"Creating large file {_out_file} of size {_size} with random content.")
     try:
         randcopy(_size, _out_file)
+        _logger.info(f"File {_out_file} succesfully created.")
     except Exception as e:
-        _logger.error(f"Error generating file {_out_file}. Error message '{e}'.")
+        _logger.error(f"ERROR creating file {_out_file}.")
