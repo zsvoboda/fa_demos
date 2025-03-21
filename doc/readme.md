@@ -8,7 +8,7 @@ You need a Linux, Mac, or Windows machine with Python 3.8 or higher. Sonme demos
 
 ## Demo Setup
 
-The [bin directory](./bin) contains bash and Windows command line scripts for running the demos in this repository.
+The [bin directory](../bin) contains bash and Windows command line scripts for running the demos in this repository.
 
 To install the demo, execute the following scripts:
 
