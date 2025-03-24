@@ -2,7 +2,9 @@
 setlocal
 
 set THIS_DIR=%~dp0
-set PYTHONPATH=%THIS_DIR%\..\lib;%THIS_DIR%\..\src
+set SRC_DIR=%THIS_DIR%\..\src
+set LIB_DIR=%THIS_DIR%\..\lib
+set PYTHONPATH=%LIB_DIR%;%SRC_DIR%
 
 for /f "delims=" %%x in (%THIS_DIR%..\.env) do set %%x
 echo "Setting up Flash Array..."
@@ -26,14 +28,14 @@ pause
 
 echo "Large file copy in progress on SMB mapped drive Z:\ with SMB CA disabled ..."
 echo "This will take a while..."
-python %PYTHONPATH%\util\randcopy.py -n 6000000000 Z:\\test_file.bin
+python %SRC_DIR%\util\randcopy.py -n 6000000000 Z:\\test_file.bin
 
 echo "Now, let's copy a large file to the mapped drive Y:\ with SMB CA enabled."
 pause
 
 echo "Large file copy in progress on SMB mapped drive Y:\ with SMB CA enabled ..."
 echo "This will take a while..."
-python %PYTHONPATH%\util\randcopy.py -n 6000000000 Y:\\test_file.bin
+python %SRC_DIR%\util\randcopy.py -n 6000000000 Y:\\test_file.bin
 
 echo "Click any key to clean up..."
 pause
@@ -42,6 +44,6 @@ echo "Cleaning up..."
 NET USE Z: /DELETE
 NET USE Y: /DELETE
 
-python %PYTHONPATH%\demos\smb_ca\setup_array.py cleanup
+python %SRC_DIR%\demos\smb_ca\setup_array.py cleanup
 
 echo "Cleanup complete."
