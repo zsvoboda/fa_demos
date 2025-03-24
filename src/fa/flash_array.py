@@ -1,7 +1,7 @@
 import sys
 import os
-import lib.pypureclient
-from lib.pypureclient.flasharray import FileSystem, Directory, Pod, Policy, PolicyRuleNfsClient, \
+import pypureclient
+from pypureclient.flasharray import FileSystem, Directory, Pod, Policy, PolicyRuleNfsClient, \
     PolicyRuleNfsClientPost, \
     PolicyRuleSmbClient, PolicyRuleSmbClientPost, PolicyRuleQuota, PolicyRuleQuotaPost, PolicyRuleSnapshot, \
     PolicyRuleSnapshotPost, PolicyMemberExportPost, PolicymemberexportpostMembers, ReferenceWithType, \
@@ -63,7 +63,7 @@ class FlashArray:
 
     def authenticate(self):
         """Authenticate to the array"""
-        self._client = lib.pypureclient.flasharray.Client(self._array_host, api_token=self._api_token)
+        self._client = pypureclient.flasharray.Client(self._array_host, api_token=self._api_token)
 
     def get_local_groups(self):
         """Return the array local groups"""
