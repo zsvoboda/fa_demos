@@ -3,14 +3,12 @@ import os
 import socket
 import socks
 
-# Setup SOCKS5 proxy
-socks.setdefaultproxy(socks.PROXY_TYPE_SOCKS5, 'localhost', 1080)
-socket.socket = socks.socksocket
+from pypureclient.flasharray import ReferenceWithType
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 
 from fa.flash_array import FlashArray
-from pypureclient.flasharray import ReferenceWithType
+
 
 import logging
 from log import setup_logging
@@ -124,15 +122,17 @@ def cleanup(fa):
     except Exception as e:
         _logger.error(f"Error deleting local user. Error message '{e}'.")
 
-
-# Setup connection to FlashArray
-FA_HOSTNAME = os.getenv("FA_DEMO_HOSTNAME")
-FA_API_TOKEN = os.getenv("FA_DEMO_API_TOKEN")
-
-fa = FlashArray(api_token=FA_API_TOKEN, array_host=FA_HOSTNAME)
-fa.authenticate()
-
 if __name__ == '__main__':
+
+    # Setup SOCKS5 proxy
+    socks.setdefaultproxy(socks.PROXY_TYPE_SOCKS5, 'localhost', 1080)
+    socket.socket = socks.socksocket
+    # Setup connection to FlashArray
+    FA_HOSTNAME = os.getenv("FA_DEMO_HOSTNAME")
+    FA_API_TOKEN = os.getenv("FA_DEMO_API_TOKEN")
+
+    fa = FlashArray(api_token=FA_API_TOKEN, array_host=FA_HOSTNAME)
+    fa.authenticate()
 
     if len(sys.argv) > 1 and sys.argv[1] == "cleanup":
         _logger.info(f"Cleaning up {FA_HOSTNAME} array ...")

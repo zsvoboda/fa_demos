@@ -1,10 +1,12 @@
 import sys
 import os
-import pypureclient
-from pypureclient.flasharray import FileSystem, Directory, Pod, Policy, PolicyRuleNfsClient, PolicyRuleNfsClientPost, \
+import lib.pypureclient
+from lib.pypureclient.flasharray import FileSystem, Directory, Pod, Policy, PolicyRuleNfsClient, \
+    PolicyRuleNfsClientPost, \
     PolicyRuleSmbClient, PolicyRuleSmbClientPost, PolicyRuleQuota, PolicyRuleQuotaPost, PolicyRuleSnapshot, \
     PolicyRuleSnapshotPost, PolicyMemberExportPost, PolicymemberexportpostMembers, ReferenceWithType, \
-    PolicyMemberPost, PolicymemberpostMembers, LocalGroup, LocalUserPost, LocalUserPatch, PolicyNfsPost, ErrorResponse
+    PolicyMemberPost, PolicymemberpostMembers, LocalGroup, LocalUserPost, LocalUserPatch, PolicyNfsPost, ErrorResponse, \
+    PolicySmbPatch
 
 import logging
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
@@ -61,7 +63,7 @@ class FlashArray:
 
     def authenticate(self):
         """Authenticate to the array"""
-        self._client = pypureclient.flasharray.Client(self._array_host, api_token=self._api_token)
+        self._client = lib.pypureclient.flasharray.Client(self._array_host, api_token=self._api_token)
 
     def get_local_groups(self):
         """Return the array local groups"""
@@ -330,7 +332,7 @@ class FlashArray:
 
     def create_policy_smb(self, name, enabled=True, continuous_availability=True):
         """Create a new SMB policy"""
-        p = Policy(name=name, policy_type='smb', enabled=enabled, continuous_availability=continuous_availability)
+        p = PolicySmbPatch(name=name, enabled=enabled, continuous_availability_enabled=continuous_availability)
         r = self._client.post_policies_smb(policy=p, names=[name])
         return handle_response_with_items(r)
 
