@@ -1,5 +1,11 @@
 import sys
 import os
+import socket
+import socks
+
+# Setup SOCKS5 proxy
+socks.setdefaultproxy(socks.PROXY_TYPE_SOCKS5, 'localhost', 1080)
+socket.socket = socks.socksocket
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 
@@ -127,6 +133,7 @@ fa = FlashArray(api_token=FA_API_TOKEN, array_host=FA_HOSTNAME)
 fa.authenticate()
 
 if __name__ == '__main__':
+
     if len(sys.argv) > 1 and sys.argv[1] == "cleanup":
         _logger.info(f"Cleaning up {FA_HOSTNAME} array ...")
         cleanup(fa)
