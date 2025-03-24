@@ -42,7 +42,7 @@ def setup(fa):
         _logger.error(f"Error creating file system 'smb_no_ca_file_system'. Error message '{e}'.")
 
     try:
-        fa.create_policy_smb(name='smb_ca_policy')
+        fa.create_policy_smb(name='smb_ca_policy', continuous_availability=True)
     except Exception as e:
         _logger.error(f"Error creating policy 'smb_ca_policy'. Error message '{e}'.")
 
@@ -59,7 +59,7 @@ def setup(fa):
         _logger.error(f"Error exporting managed directory for 'smb_ca_policy'. Error message '{e}'.")
 
     try:
-        fa.create_policy_smb(name='smb_no_ca_policy')
+        fa.create_policy_smb(name='smb_no_ca_policy', continuous_availability=False)
     except Exception as e:
         _logger.error(f"Error creating policy 'smb_no_ca_policy'. Error message '{e}'.")
 

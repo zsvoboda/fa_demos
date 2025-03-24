@@ -328,9 +328,9 @@ class FlashArray:
         r = self._client.delete_policies_nfs(names=[name] if name else None, ids=[policy_id] if policy_id else None)
         return handle_response_with_items(r)
 
-    def create_policy_smb(self, name, enabled=True):
+    def create_policy_smb(self, name, enabled=True, continuous_availability=True):
         """Create a new SMB policy"""
-        p = Policy(name=name, policy_type='smb', enabled=enabled)
+        p = Policy(name=name, policy_type='smb', enabled=enabled, continuous_availability=continuous_availability)
         r = self._client.post_policies_smb(policy=p, names=[name])
         return handle_response_with_items(r)
 
