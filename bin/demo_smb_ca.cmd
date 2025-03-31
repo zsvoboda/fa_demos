@@ -9,7 +9,7 @@ set PYTHONPATH=%LIB_DIR%;%SRC_DIR%
 for /f "delims=" %%x in (%THIS_DIR%..\.env) do set %%x
 echo "Setting up Flash Array..."
 
-python %PYTHONPATH%\demos\smb_ca\setup_array.py setup
+python %SRC_DIR%\demos\smb_ca\setup_array.py setup
 
 echo "Setup completed."
 echo "Please manually configure smb_ca_policy on the array to use SMB CA."
