@@ -11,7 +11,7 @@ echo "Setting up Flash Array..."
 
 python %PYTHONPATH%\demos\smb_ca\setup_array.py setup
 
-echo "Setup is complete."
+echo "Setup completed."
 echo "Please manually configure smb_ca_policy on the array to use SMB CA."
 pause
 
@@ -46,4 +46,4 @@ NET USE Y: /DELETE
 
 python %SRC_DIR%\demos\smb_ca\setup_array.py cleanup
 
-echo "Cleanup complete."
+echo "Cleanup completed."
