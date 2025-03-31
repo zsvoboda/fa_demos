@@ -16,9 +16,10 @@ setup_logging()
 _logger = logging.getLogger(__name__)
 
 if __name__ == "__main__":
+
     # Setup SOCKS5 proxy
-    socks.setdefaultproxy(socks.PROXY_TYPE_SOCKS5, 'localhost', 1080)
-    socket.socket = socks.socksocket
+    #socks.setdefaultproxy(socks.PROXY_TYPE_SOCKS5, 'localhost', 1080)
+    #socket.socket = socks.socksocket
 
     ad = ActiveDirectory()
 

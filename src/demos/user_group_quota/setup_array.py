@@ -9,7 +9,6 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")
 
 from fa.flash_array import FlashArray
 
-
 import logging
 from log import setup_logging
 
@@ -17,8 +16,47 @@ setup_logging()
 _logger = logging.getLogger(__name__)
 
 from load_env import load_env
+import requests
 load_env()
 
+def create_policy_user_group_quota(_policy_name):
+    
+    FA_HOSTNAME = os.getenv("FA_DEMO_HOSTNAME")
+    
+    url = f'http://{FA_HOSTNAME}/2.X/policies/user-group-quota?names={_policy_name}'
+    headers = {
+        'user': 'root',
+        'Content-Type': 'application/json'
+    }
+    data = {
+        "location_context": None,
+        "enabled": True
+    }
+
+    response = requests.post(url, headers=headers, json=data)
+
+    if response.status_code == 200:
+        _logger.info("User group quota policy created successfully.")
+    else:
+        _logger.error(f"Failed to create user group quota policy. Status code: {response.status_code}, Response: {response.text}")
+        raise Exception(f"Failed to create user group quota policy. Status code: {response.status_code}, Response: {response.text}")
+    
+def delete_policy_user_group_quota(_policy_name):
+    FA_HOSTNAME = os.getenv("FA_DEMO_HOSTNAME")
+
+    url = f'http://{FA_HOSTNAME}/2.X/policies/user-group-quota?names={_policy_name}'
+    headers = {
+        'user': 'root',
+        'Content-Type': 'application/json'
+    }
+
+    response = requests.delete(url, headers=headers)
+
+    if response.status_code == 200:
+        _logger.info("User group quota policy deleted successfully.")
+    else:
+        _logger.error(f"Failed to delete user group quota policy. Status code: {response.status_code}, Response: {response.text}")
+        raise Exception(f"Failed to delete user group quota policy. Status code: {response.status_code}, Response: {response.text}")
 
 def setup(fa):
     
@@ -36,85 +74,42 @@ def setup(fa):
 
     # Create filesystem
     try:
-        fa.create_file_system('smb_ca_file_system')
+        fa.create_file_system('user_group_quota_file_system')
     except Exception as e:
-        _logger.error(f"Error creating file system 'smb_ca_file_system'. Error message '{e}'.")
-    
-    try:
-        fa.create_file_system('smb_no_ca_file_system')
-    except Exception as e:
-        _logger.error(f"Error creating file system 'smb_no_ca_file_system'. Error message '{e}'.")
+        _logger.error(f"Error creating file system 'user_group_quota_file_system'. Error message '{e}'.")
 
     try:
-        fa.create_policy_smb(name='smb_ca_policy', continuous_availability=True)
+        create_policy_user_group_quota(name='user_group_quota_policy')
     except Exception as e:
-        _logger.error(f"Error creating policy 'smb_ca_policy'. Error message '{e}'.")
+        _logger.error(f"Error creating policy 'user_group_quota_policy'. Error message '{e}'.")
 
     try:
-        fa.create_policy_smb_rule(policy_name='smb_ca_policy', client='*')
+        fa.export_managed_directory_smb(policy_name='smb-simple',
+                                        managed_directory_name='user_group_quota_file_system:root',
+                                        export_name='user_group_quota')
     except Exception as e:
-        _logger.error(f"Error creating policy rule for 'smb_ca_policy'. Error message '{e}'.")
-
-    try:
-        fa.export_managed_directory_smb(policy_name='smb_ca_policy',
-                                        managed_directory_name='smb_ca_file_system:root',
-                                        export_name='smb_ca')
-    except Exception as e:
-        _logger.error(f"Error exporting managed directory for 'smb_ca_policy'. Error message '{e}'.")
-
-    try:
-        fa.create_policy_smb(name='smb_no_ca_policy', continuous_availability=False)
-    except Exception as e:
-        _logger.error(f"Error creating policy 'smb_no_ca_policy'. Error message '{e}'.")
-
-    try:
-        fa.create_policy_smb_rule(policy_name='smb_no_ca_policy', client='*')
-    except Exception as e:
-        _logger.error(f"Error creating policy rule for 'smb_no_ca_policy'. Error message '{e}'.")
-
-    try:
-        fa.export_managed_directory_smb(policy_name='smb_no_ca_policy',
-                                        managed_directory_name='smb_no_ca_file_system:root',
-                                        export_name='smb_no_ca')
-    except Exception as e:
-        _logger.error(f"Error exporting managed directory for 'smb_no_ca_policy'. Error message '{e}'.")
+        _logger.error(f"Error exporting managed directory for 'user_group_quota_policy'. Error message '{e}'.")
 
 def cleanup(fa):
 
     # Delete exports and policies
     try:
-        fa.delete_export(export_name='smb_ca', policy_name='smb_ca_policy')
+        fa.delete_export(export_name='user_group_quota', policy_name='smb-simple')
     except Exception as e:
-        _logger.error(f"Error deleting export 'smb_ca'. Error message '{e}'.")
-
-    try:
-        fa.delete_export(export_name='smb_no_ca', policy_name='smb_no_ca_policy')
-    except Exception as e:
-        _logger.error(f"Error deleting export 'smb_no_ca'. Error message '{e}'.")
+        _logger.error(f"Error deleting export 'user_group_quota'. Error message '{e}'.")
 
     # Destroy and eradicate file system
     try:
-        fa.destroy_file_system(name='smb_ca_file_system')
-        fa.eradicate_file_system(name='smb_ca_file_system')
+        fa.destroy_file_system(name='user_group_quota_file_system')
+        fa.eradicate_file_system(name='user_group_quota_file_system')
     except Exception as e:
-        _logger.error(f"Error destroying or eradicating file system 'smb_ca_file_system'. Error message '{e}'.")
-
-    try:
-        fa.destroy_file_system(name='smb_no_ca_file_system')
-        fa.eradicate_file_system(name='smb_no_ca_file_system')
-    except Exception as e:
-        _logger.error(f"Error destroying or eradicating file system 'smb_no_ca_file_system'. Error message '{e}'.")
+        _logger.error(f"Error destroying or eradicating file system 'user_group_quota_file_system'. Error message '{e}'.")
 
     # Delete policies
     try:
-        fa.delete_policy_smb(name='smb_ca_policy')
+        fa.delete_policy_user_group_quota(name='user_group_quota_policy')
     except Exception as e:
-        _logger.error(f"Error deleting policy 'smb_ca_policy'. Error message '{e}'.")
-
-    try:
-        fa.delete_policy_smb(name='smb_no_ca_policy')
-    except Exception as e:
-        _logger.error(f"Error deleting policy 'smb_no_ca_policy'. Error message '{e}'.")
+        _logger.error(f"Error deleting policy 'user_group_quota_policy'. Error message '{e}'.")
 
     # Delete local user
     try:
@@ -125,8 +120,9 @@ def cleanup(fa):
 if __name__ == '__main__':
 
     # Setup SOCKS5 proxy
-    socks.setdefaultproxy(socks.PROXY_TYPE_SOCKS5, 'localhost', 1080)
-    socket.socket = socks.socksocket
+    #socks.setdefaultproxy(socks.PROXY_TYPE_SOCKS5, 'localhost', 1080)
+    #socket.socket = socks.socksocket
+
     # Setup connection to FlashArray
     FA_HOSTNAME = os.getenv("FA_DEMO_HOSTNAME")
     FA_API_TOKEN = os.getenv("FA_DEMO_API_TOKEN")

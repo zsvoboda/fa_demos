@@ -271,6 +271,44 @@ class FlashArray:
             policy_ids=[policy_id] if policy_id else None)
         return handle_response_with_items(r)
 
+
+    def get_policy_user_group_quota_rules(self, policy_name=None, policy_id=None):
+        """Return the array quota policy rules"""
+        '''
+        r = self._client.get_policies_user_group_quota_rules(policy_names=[policy_name] if policy_name else None,
+                                                  policy_ids=[policy_id] if policy_id else None)
+        return handle_response_with_items(r)
+        '''
+        raise FlashArrayError("Creating user-group-quota policy is not supported yet.")
+
+    def create_policy_user_group_quota_rule(self, quota_limit, enforced, rule_name=None,
+                                 notifications=None, policy_name=None, policy_id=None):
+        """Create a new quota policy rule"""
+        '''
+        rule = PolicyRuleQuota(
+            name=rule_name if rule_name else None,
+            enforced=enforced if enforced else None,
+            quota_limit=quota_limit if quota_limit else None,
+            notifications=notifications if notifications else None)
+
+        r = self._client.post_policies_quota_rules(rules=PolicyRuleQuotaPost(rules=[rule]),
+                                                   policy_names=[policy_name] if policy_name else None,
+                                                   policy_ids=[policy_id] if policy_id else None)
+        return handle_response_with_items(r)
+        '''
+        raise FlashArrayError("Creating user-group-quota policy is not supported yet.")
+
+    def delete_policy_user_group_quota_rules(self, rule_name=None, policy_name=None, policy_id=None):
+        """Delete the array quota policy rules"""
+        '''
+        r = self._client.delete_policies_quota_rules(
+            names=[rule_name] if rule_name else None,
+            policy_names=[policy_name] if policy_name else None,
+            policy_ids=[policy_id] if policy_id else None)
+        return handle_response_with_items(r)
+        '''
+        raise FlashArrayError("Creating user-group-quota policy is not supported yet.")
+
     def get_policy_snapshot_rules(self, policy_name=None, policy_id=None):
         """Return the array snapshot policy rules"""
         r = self._client.get_policies_snapshot_rules(policy_names=[policy_name] if policy_name else None,
@@ -351,6 +389,23 @@ class FlashArray:
         """Delete quota policy"""
         r = self._client.delete_policies_quota(names=[name] if name else None, ids=[policy_id] if policy_id else None)
         return handle_response_with_items(r)
+
+    def create_policy_user_group_quota(self, name, enabled=True):
+        """Create a new quota policy"""
+        '''
+        p = Policy(name=name, policy_type='user-group-quota', enabled=enabled)
+        r = self._client.post_policies_user_group_quota(policy=p, names=[name])
+        return handle_response_with_items(r)
+        '''
+        raise FlashArrayError("Creating user-group-quota policy is not supported yet.")
+
+    def delete_policy_user_group_quota(self, name=None, policy_id=None):
+        """Delete quota policy"""
+        '''
+        r = self._client.delete_policies_user_group_quota(names=[name] if name else None, ids=[policy_id] if policy_id else None)
+        return handle_response_with_items(r)
+        '''
+        raise FlashArrayError("Creating user-group-quota policy is not supported yet.")
 
     def create_policy_snapshot(self, name, enabled=True):
         """Create a new snapshot policy"""
@@ -611,6 +666,8 @@ class FlashArray:
             return self.create_policy_snapshot(name, enabled)
         elif policy_type == 'autodir':
             return self.create_policy_autodir(name, enabled)
+        elif policy_type == 'user-group-quota':
+            return self.create_policy_user_group_quota(name, enabled)
         else:
             raise FlashArrayError(f"Policy type {policy_type}' is not supported yet.")
 
@@ -629,6 +686,8 @@ class FlashArray:
                 return self.delete_policy_snapshot(policy_name)
             elif p[0].policy_type == 'autodir':
                 return self.delete_policy_autodir(policy_name)
+            elif p[0].policy_type == 'user-group-quota':
+                return self.delete_policy_user_group_quota(policy_name)
             else:
                 raise FlashArrayError(f"Policy type {p[0].policy_type}' is not supported yet.")
         else:
