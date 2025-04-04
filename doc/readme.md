@@ -47,6 +47,8 @@ AD_DNS_DOMAIN_SUFFIX=<active-directory-dns-domain-suffix>
 FA_DEMO_USER_NAME=<fa-file-services-demo-user-name>
 FA_DEMO_USER_DOMAIN=<fa-file-services-demo-user-domain-name>
 FA_DEMO_USER_PASSWORD=<fa-file-services-demo-user-password>
+FA_DEMO_USE_AD=<true-if-using-active-directory-false-if-using-local-user>
+FA_DEMO_USE_SOCKS5_PROXY=<true-if-using-socks5-proxy-false-if-not-using-socks5-proxy>
 ```
 
 After configuring the `.env` file, activate the virtual environment before starting a demo. Run the following script in each terminal or command line prompt when running multiple demos.

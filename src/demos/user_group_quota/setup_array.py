@@ -119,13 +119,14 @@ def cleanup(fa):
 
 if __name__ == '__main__':
 
-    # Setup SOCKS5 proxy
-    #socks.setdefaultproxy(socks.PROXY_TYPE_SOCKS5, 'localhost', 1080)
-    #socket.socket = socks.socksocket
-
     # Setup connection to FlashArray
     FA_HOSTNAME = os.getenv("FA_DEMO_HOSTNAME")
     FA_API_TOKEN = os.getenv("FA_DEMO_API_TOKEN")
+    FA_DEMO_USE_SOCKS5_PROXY= os.getenv("FA_DEMO_USE_SOCKS5_PROXY")
+
+    if FA_DEMO_USE_SOCKS5_PROXY == 'true':
+        socks.setdefaultproxy(socks.PROXY_TYPE_SOCKS5, 'localhost', 1080)
+        socket.socket = socks.socksocket
 
     fa = FlashArray(api_token=FA_API_TOKEN, array_host=FA_HOSTNAME)
     fa.authenticate()

@@ -1,4 +1,5 @@
 import sys
+import os
 import socket
 import socks
 
@@ -17,9 +18,11 @@ _logger = logging.getLogger(__name__)
 
 if __name__ == "__main__":
 
-    # Setup SOCKS5 proxy
-    #socks.setdefaultproxy(socks.PROXY_TYPE_SOCKS5, 'localhost', 1080)
-    #socket.socket = socks.socksocket
+    FA_DEMO_USE_SOCKS5_PROXY = os.getenv("FA_DEMO_USE_SOCKS5_PROXY")
+
+    if FA_DEMO_USE_SOCKS5_PROXY == 'true':
+        socks.setdefaultproxy(socks.PROXY_TYPE_SOCKS5, 'localhost', 1080)
+        socket.socket = socks.socksocket
 
     ad = ActiveDirectory()
 
