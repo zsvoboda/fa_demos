@@ -19,7 +19,7 @@ REQUIRES = [
     'urllib3 >= 1.26.17',
     'paramiko >= 3.4.0',
     'pyjwt >=2.0.0',
-    'requests >= 2.32.0',
+    'requests >= 2.27.1',
     ]
 
 if sys.version_info < (3, 5):
