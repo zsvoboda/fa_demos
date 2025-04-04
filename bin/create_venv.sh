@@ -8,4 +8,4 @@ python3 -m venv $THIS_DIR/../.venv
 # Activate the virtual environment
 source $THIS_DIR/../.venv/bin/activate
 
-echo "Virtual environment created and activated in $THIS_DIR/.venv"
+echo "Virtual environment created and activated in $THIS_DIR/../.venv"
