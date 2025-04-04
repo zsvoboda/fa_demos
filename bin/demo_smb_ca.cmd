@@ -31,14 +31,14 @@ pause
 
 echo "Large file copy in progress on SMB mapped drive Z:\ with SMB CA disabled ..."
 echo "This will take a while..."
-python %SRC_DIR%\util\randcopy.py -n 6000000000 Z:\\test_file.bin
+%THIS_DIR%\..\.venv\Scripts\python %SRC_DIR%\util\randcopy.py -n 6000000000 Z:\\test_file.bin
 
 echo "Now, let's copy a large file to the mapped drive Y:\ with SMB CA enabled."
 pause
 
 echo "Large file copy in progress on SMB mapped drive Y:\ with SMB CA enabled ..."
 echo "This will take a while..."
-python %SRC_DIR%\util\randcopy.py -n 6000000000 Y:\\test_file.bin
+%THIS_DIR%\..\.venv\Scripts\python %SRC_DIR%\util\randcopy.py -n 6000000000 Y:\\test_file.bin
 
 echo "Click any key to clean up..."
 pause

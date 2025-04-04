@@ -8,4 +8,4 @@ set PYTHONPATH=%LIB_DIR%;%SRC_DIR%
 :: Activate the virtual environment
 call %THIS_DIR%\..\.venv\Scripts\activate
 
-python %SRC_DIR%\util\randcopy.py %*
+%THIS_DIR%\..\.venv\Scripts\python %SRC_DIR%\util\randcopy.py %*
