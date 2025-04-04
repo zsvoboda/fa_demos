@@ -19,15 +19,26 @@ del /q Z:\*
 echo "Now, let's create a shared directory."
 mkdir Z:\shared_dir
 echo "Now, let's set the inherited permissions on the directory for win_users to allow access."
-icacls Z:\shared_dir /inheritance:enable /grant "win_users:(OI)(CI)M"
+icacls Z:\shared_dir /inheritance:e /grant "win_users:(OI)(CI)M"
 echo "Creating a test file on the Z:\ drive..."
 echo Test content written from SMB mapped drive. > Z:\shared_dir\file_from_windows_smb_session.txt
 
 echo "Now run the demo_multiprotocol.sh script from a Linux instance to test the multi-protocol functionality."
-echo "Then, Press any key to cleanup..."
+echo "Then, Press any key to check access to a file created from the Linux NFS session ..."
+
 pause
 
+if exist "Z:\shared_dir\file_from_linux_nfs_session.txt" (
+    echo File from Linux NFS session exists.
+    type "Z:\shared_dir\file_from_windows_smb_session.txt"
+) else (
+    echo File from Linux NFS session does NOT exist.
+)
+
+echo "Press a key to clean up the environment..."
+pause
 echo "Cleaning up..."
+rd /s /q Z:\shared_dir
 NET USE Z: /DELETE
 
 python %SRC_DIR%\demos\multi_protocol\setup_array.py cleanup
