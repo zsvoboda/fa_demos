@@ -14,7 +14,7 @@ python %SRC_DIR%\demos\multi_protocol\setup_array.py setup
 echo "Setup completed."
 echo "Mapping the Z:\ drive to a share."
 NET USE Z: \\%FA_DEMO_VIF_HOSTNAME%\multi /USER:%FA_DEMO_USER_DOMAIN%\win_user password
-del /q Z:\*
+del /f /q "Z:\shared_dir"
 
 echo "Now, let's create a shared directory."
 mkdir Z:\shared_dir
@@ -38,7 +38,7 @@ if exist "Z:\shared_dir\file_from_linux_nfs_session.txt" (
 echo "Press a key to clean up the environment..."
 pause
 echo "Cleaning up..."
-rd /s /q Z:\shared_dir
+del /f /q "Z:\shared_dir"
 NET USE Z: /DELETE
 
 python %SRC_DIR%\demos\multi_protocol\setup_array.py cleanup
