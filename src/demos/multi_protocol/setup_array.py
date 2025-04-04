@@ -4,11 +4,12 @@ import socket
 import socks
 
 from ad.active_directory import ActiveDirectory
-from pypureclient.flasharray import ReferenceWithType
+from fa import FlashArray
+from pypureclient.flasharray.FA_2_X import ReferenceWithType
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 
-from fa.flash_array import FlashArray
+
 
 import logging
 from log import setup_logging
