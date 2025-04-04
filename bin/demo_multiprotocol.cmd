@@ -18,7 +18,7 @@ echo "Setting up Flash Array..."
 echo "Setup completed."
 echo "Mapping the Z:\ drive to a share."
 NET USE Z: \\%FA_DEMO_VIF_HOSTNAME%\multi /USER:%FA_DEMO_USER_DOMAIN%\win_user password
-del /f /q "Z:\shared_dir"
+del /f /q "Z:\*"
 
 echo "Now, let's create a shared directory."
 mkdir Z:\shared_dir
