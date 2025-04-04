@@ -17,11 +17,11 @@ NET USE Z: \\%FA_DEMO_VIF_HOSTNAME%\multi /USER:%FA_DEMO_USER_DOMAIN%\win_user p
 del /q Z:\*
 
 echo "Now, let's create a shared directory."
-mkdir Z:\shared_dire
+mkdir Z:\shared_dir
 echo "Now, let's set the inherited permissions on the directory for win_users to allow access."
-icacls Z:\shared_dire /inheritance:enable /grant "win_users:(OI)(CI)M"
+icacls Z:\shared_dir /inheritance:enable /grant "win_users:(OI)(CI)M"
 echo "Creating a test file on the Z:\ drive..."
-type "Test content written from SMB mapped drive." > Z:\shared_dire\file_from_windows_smb_session.txt
+echo Test content written from SMB mapped drive. > Z:\shared_dir\file_from_windows_smb_session.txt
 
 echo "Now run the demo_multiprotocol.sh script from a Linux instance to test the multi-protocol functionality."
 echo "Then, Press any key to cleanup..."
