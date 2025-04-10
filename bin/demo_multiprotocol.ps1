@@ -33,7 +33,7 @@ function Add-RawSidAcl {
 
         # Construct and inject new ACE
         $ace = "(A;;$AccessMask;;;$Sid)"
-        $newSddl = $sddl -replace '\)$', "$ace)"
+        $newSddl = $sddl -replace '$', "$ace"
 
         Write-Host "Adding SID '$Sid' to '$Path' with access mask '$AccessMask'..."
         Write-Host "Current SDDL: $sddl"
