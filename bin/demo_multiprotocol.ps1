@@ -32,7 +32,7 @@ Write-Host "Setting up Flash Array..."
 
 Write-Host "Setup completed."
 Write-Host "Mapping the Z: drive to a share..."
-net use "Z:\" "\\${env:FA_DEMO_VIF_HOSTNAME}\multi" /USER:"${env:FA_DEMO_USER_DOMAIN}\win_user" "password"
+net use "Z:" "\\${env:FA_DEMO_VIF_HOSTNAME}\multi" /USER:"${env:FA_DEMO_USER_DOMAIN}\win_user" "password"
 
 # Clean up any existing files
 Remove-Item "Z:\*" -Force -Recurse -ErrorAction SilentlyContinue
