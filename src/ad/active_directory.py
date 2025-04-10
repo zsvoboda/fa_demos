@@ -21,15 +21,15 @@ class ActiveDirectory:
         self.default_password = "password"  # Ensure password meets complexity
 
         # Domain details from ENV variables
-        self.domain_name = os.getenv('AD_DOMAIN_NAME', '')
-        self.domain_suffix = os.getenv('AD_DOMAIN_TOP_LEVEL_SUFFIX', 'local')
-        self.admin_user = os.getenv('AD_DOMAIN_ADMIN_USER', 'Administrator')
-        self.admin_password = os.getenv('AD_DOMAIN_ADMIN_PASSWORD')
-        self.dns_suffix = os.getenv('DNS_DOMAIN_SUFFIX', 'dev.purestorage.com')
-        self.ad_ip = os.getenv('AD_IP')
+        self.domain_name = os.getenv('FA_DEMO_AD_DOMAIN_NAME', '')
+        self.domain_suffix = os.getenv('FA_DEMO_AD_DOMAIN_TOP_LEVEL_SUFFIX', 'local')
+        self.admin_user = os.getenv('FA_DEMO_AD_DOMAIN_ADMIN_USER', 'Administrator')
+        self.admin_password = os.getenv('FA_DEMO_AD_DOMAIN_ADMIN_PASSWORD')
+        self.dns_suffix = os.getenv('FA_DEMO_DNS_DOMAIN_SUFFIX', 'dev.purestorage.com')
+        self.ad_ip = os.getenv('FA_DEMO_AD_HOSTNAME')
 
         if not self.admin_password:
-            raise ValueError("AD_DOMAIN_ADMIN_PASSWORD is required but not set.")
+            raise ValueError("FA_DEMO_ADMIN_PASSWORD is required but not set.")
 
         # AD Server details
         ad_hostname = self.ad_ip or f'{self.domain_name}.{self.dns_suffix}'
