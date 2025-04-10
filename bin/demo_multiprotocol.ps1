@@ -9,7 +9,7 @@ $SRC_DIR = Join-Path $ROOT_DIR "src"
 $LIB_DIR = Join-Path $ROOT_DIR "lib"
 
 # Set PYTHONPATH environment variable
-$env:PYTHONPATH = "$ROOT_DIR;$SRC_DIR;$LIB_DIR"
+${PYTHONPATH} = "$ROOT_DIR;$SRC_DIR;$LIB_DIR"
 
 # Activate the virtual environment
 & "$ROOT_DIR\.venv\Scripts\Activate.ps1"
@@ -19,7 +19,7 @@ Get-Content "$ROOT_DIR\.env" | ForEach-Object {
     if ($_ -match "^\s*([^#][^=]*)=(.*)$") {
         $key = $matches[1].Trim()
         $val = $matches[2].Trim()
-        $env:$key = $val
+        ${$key} = $val
     }
 }
 
@@ -30,8 +30,8 @@ Write-Host "Setting up Flash Array..."
 
 Write-Host "Setup completed."
 Write-Host "Mapping the Z: drive to a share..."
-Write-Host "NET USE Z: \\$($env:FA_DEMO_VIF_HOSTNAME)\multi /USER:$($env:FA_DEMO_USER_DOMAIN)\win_user password"
-net use Z: "\\$($env:FA_DEMO_VIF_HOSTNAME)\multi" /USER:"$($env:FA_DEMO_USER_DOMAIN)\win_user" "password"
+Write-Host "NET USE Z: \\$($FA_DEMO_VIF_HOSTNAME)\multi /USER:$($FA_DEMO_USER_DOMAIN)\win_user password"
+net use Z: "\\$($FA_DEMO_VIF_HOSTNAME)\multi" /USER:"$($FA_DEMO_USER_DOMAIN)\win_user" "password"
 
 # Clean up any existing files
 Remove-Item "Z:\*" -Force -Recurse -ErrorAction SilentlyContinue
@@ -42,13 +42,13 @@ New-Item -Path "Z:\shared_dir" -ItemType Directory | Out-Null
 Write-Host "Setting permissions on the shared directory..."
 
 
-if ($env:FA_DEMO_USE_AD -eq "true") {
-    $domainName = $env:FA_DEMO_USER_DOMAIN
+if ($FA_DEMO_USE_AD -eq "true") {
+    $domainName = ${FA_DEMO_USER_DOMAIN}
 } else {
-    $domainName = $env:FA_DEMO_VIF_HOSTNAME
+    $domainName = ${FA_DEMO_VIF_HOSTNAME}
 }
-$domainName = $env:FA_DEMO_USER_DOMAIN
-$domainController = $env:FA_DEMO_AD_HOSTNAME
+$domainName = ${FA_DEMO_USER_DOMAIN}
+$domainController = ${FA_DEMO_AD_HOSTNAME}
 
 try {
     $win_user_sid = (Get-ADUser "$domainName\win_user" -Server $domainController -Properties SID).SID.Value
