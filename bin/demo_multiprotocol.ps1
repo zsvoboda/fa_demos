@@ -8,9 +8,9 @@ function Add-RawSidAcl {
         [string]$Path,
 
         [Parameter(Mandatory = $true)]
-        [string]$SID,
+        [string]$Sid,
 
-        [string]$AccessMask = "0x1200a9"  # Default: Generic Read + Write
+        [string]$AccessMask = "0x1200a9"  # Read + Write
     )
 
     if (-not (Test-Path $Path)) {
@@ -19,22 +19,30 @@ function Add-RawSidAcl {
 
     try {
         $acl = Get-Acl $Path
-        $sddl = $acl.Sddl
+        $sddl = $acl.GetSecurityDescriptorSddlForm('All')
 
-        # Build the new ACE in SDDL format
+        # Validate SID format
+        if ($Sid -notmatch '^S-\d-\d+-(\d+-?)+$') {
+            throw "The SID '$Sid' is not in a valid format."
+        }
+
+        # Validate that SDDL ends with a closing parenthesis
+        if ($sddl -notmatch '\)$') {
+            throw "The SDDL string for '$Path' does not end in a valid ACE block: $sddl"
+        }
+
+        # Construct and inject new ACE
         $ace = "(A;;$AccessMask;;;$Sid)"
-
-        # Inject the ACE into the DACL
         $newSddl = $sddl -replace '\)$', "$ace)"
 
-        # Apply updated SDDL
+        # Set updated ACL
         $acl.SetSecurityDescriptorSddlForm($newSddl)
         Set-Acl -Path $Path -AclObject $acl
 
-        Write-Host "Successfully added SID '$Sid' to '$Path'."
+        Write-Host "✅ Successfully added SID '$Sid' to '$Path'"
     }
     catch {
-        Write-Error "Failed to apply ACL: $_"
+        Write-Error "❌ Error setting $Path permissions: $_"
     }
 }
 
