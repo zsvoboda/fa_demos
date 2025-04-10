@@ -23,6 +23,8 @@ Get-Content "$ROOT_DIR\.env" | ForEach-Object {
     }
 }
 
+Write-Host "PYTHONPATH: $PYTHONPATH"
+
 Write-Host "Setting up Flash Array..."
 
 # Run setup script
