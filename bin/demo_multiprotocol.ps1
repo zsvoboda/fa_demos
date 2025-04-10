@@ -2,6 +2,42 @@
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 
+function Add-RawSidAcl {
+    param (
+        [Parameter(Mandatory = $true)]
+        [string]$Path,
+
+        [Parameter(Mandatory = $true)]
+        [string]$SID,
+
+        [string]$AccessMask = "0x1200a9"  # Default: Generic Read + Write
+    )
+
+    if (-not (Test-Path $Path)) {
+        throw "The path '$Path' does not exist."
+    }
+
+    try {
+        $acl = Get-Acl $Path
+        $sddl = $acl.Sddl
+
+        # Build the new ACE in SDDL format
+        $ace = "(A;;$AccessMask;;;$Sid)"
+
+        # Inject the ACE into the DACL
+        $newSddl = $sddl -replace '\)$', "$ace)"
+
+        # Apply updated SDDL
+        $acl.SetSecurityDescriptorSddlForm($newSddl)
+        Set-Acl -Path $Path -AclObject $acl
+
+        Write-Host "Successfully added SID '$Sid' to '$Path'."
+    }
+    catch {
+        Write-Error "Failed to apply ACL: $_"
+    }
+}
+
 # Set up paths
 $THIS_DIR = Split-Path -Parent $MyInvocation.MyCommand.Definition
 $ROOT_DIR = Resolve-Path "$THIS_DIR\.."
@@ -58,11 +94,11 @@ try {
         exit 1
     }
     Write-Host "✅ Retrieved win_user's SID: $win_user_sid and nfs_daemon SID: $nfs_daemon_sid"
-    icacls "Z:\shared_dir" /grant "*${win_user_sid}:(OI)(CI)RW"
-    icacls "Z:\shared_dir" /grant "*${nfs_daemon_sid}:(OI)(CI)RW"
+    Add-RawSidAcl -Path "Z:\shared_dir" -SID "${win_user_sid}"
+    Add-RawSidAcl -Path "Z:\shared_dir" -SID "${nfs_daemon_sid}"
 
 } catch {
-    Write-Host "❌ Error querying AD: $_"
+    Write-Host "❌ Error setting Z:\shared_dir permissions: $_"
     exit 1
 }
 
