@@ -57,7 +57,7 @@ try {
         Write-Host "❌ Failed to retrieve SIDs for win_user or nfs_daemon."
         exit 1
     }
-    Write-Host "✅ Retrieved win_user's SID: $sid and nfs_daemon SID: $nfs_daemon_sid"
+    Write-Host "✅ Retrieved win_user's SID: $win_user_sid and nfs_daemon SID: $nfs_daemon_sid"
     icacls "Z:\shared_dir" /grant *$win_user_sid`:(OI)(CI)RW
     icacls "Z:\shared_dir" /grant *$nfs_daemon_sid`:(OI)(CI)RW
 
