@@ -102,8 +102,8 @@ try {
         exit 1
     }
     Write-Host "✅ Retrieved win_user's SID: $win_user_sid and nfs_daemon SID: $nfs_daemon_sid"
-    Add-RawSidAcl -Path "Z:\shared_dir" -SID "${win_user_sid}"
-    Add-RawSidAcl -Path "Z:\shared_dir" -SID "${nfs_daemon_sid}"
+    Add-RawSidAcl -Path "Z:\shared_dir" -Sid "${win_user_sid}"
+    Add-RawSidAcl -Path "Z:\shared_dir" -Sid "${nfs_daemon_sid}"
 
 } catch {
     Write-Host "❌ Error setting Z:\shared_dir permissions: $_"
