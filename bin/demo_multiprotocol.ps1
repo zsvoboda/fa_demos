@@ -19,7 +19,7 @@ Get-Content "$ROOT_DIR\.env" | ForEach-Object {
     if ($_ -match "^\s*([^#][^=]*)=(.*)$") {
         $key = $matches[1].Trim()
         $val = $matches[2].Trim()
-        ${${key}} = $val
+        Set-Item -Path "$key" -Value $val
     }
 }
 
