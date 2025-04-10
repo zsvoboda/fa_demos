@@ -35,6 +35,10 @@ function Add-RawSidAcl {
         $ace = "(A;;$AccessMask;;;$Sid)"
         $newSddl = $sddl -replace '\)$', "$ace)"
 
+        Write-Host "Adding SID '$Sid' to '$Path' with access mask '$AccessMask'..."
+        Write-Host "Current SDDL: $sddl"
+        Write-Host "New SDDL: $newSddl"
+
         # Set updated ACL
         $acl.SetSecurityDescriptorSddlForm($newSddl)
         Set-Acl -Path $Path -AclObject $acl
