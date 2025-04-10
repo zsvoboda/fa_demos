@@ -58,8 +58,8 @@ try {
         exit 1
     }
     Write-Host "✅ Retrieved win_user's SID: $win_user_sid and nfs_daemon SID: $nfs_daemon_sid"
-    icacls "Z:\shared_dir" /grant "*$win_user_sid:(OI)(CI)RW"
-    icacls "Z:\shared_dir" /grant "*$nfs_daemon_sid:(OI)(CI)RW"
+    icacls "Z:\shared_dir" /grant "*${win_user_sid}:(OI)(CI)RW"
+    icacls "Z:\shared_dir" /grant "*${nfs_daemon_sid}:(OI)(CI)RW"
 
 } catch {
     Write-Host "❌ Error querying AD: $_"
