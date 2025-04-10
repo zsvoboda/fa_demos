@@ -88,6 +88,8 @@ Remove-Item "Z:\*" -Force -Recurse -ErrorAction SilentlyContinue
 Write-Host "Now, let's create a shared directory."
 New-Item -Path "Z:\shared_dir" -ItemType Directory | Out-Null
 
+Read-Host "Z:\shared_dir created. Press Enter to set permissions on the shared directory..."
+
 Write-Host "Setting permissions on the shared directory..."
 
 
