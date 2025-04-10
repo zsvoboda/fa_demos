@@ -53,7 +53,7 @@ $domainController = ${env:FA_DEMO_AD_HOSTNAME}
 try {
     $win_user_sid = (Get-ADUser "win_user" -Server $domainController -Properties SID).SID.Value
     $nfs_daemon_sid = (Get-ADUser "nfs_daemon" -Server $domainController -Properties SID).SID.Value
-    if (-not $sid) {
+    if (-not $win_user_sid -or -not $nfs_daemon_sid) {
         Write-Host "❌ Failed to retrieve SIDs for win_user or nfs_daemon."
         exit 1
     }
