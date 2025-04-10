@@ -9,7 +9,7 @@ $SRC_DIR = Join-Path $ROOT_DIR "src"
 $LIB_DIR = Join-Path $ROOT_DIR "lib"
 
 # Set PYTHONPATH environment variable
-${PYTHONPATH} = "$ROOT_DIR;$SRC_DIR;$LIB_DIR"
+${env:PYTHONPATH} = "$ROOT_DIR;$SRC_DIR;$LIB_DIR"
 
 # Activate the virtual environment
 & "$ROOT_DIR\.venv\Scripts\Activate.ps1"
@@ -19,7 +19,7 @@ Get-Content "$ROOT_DIR\.env" | ForEach-Object {
     if ($_ -match "^\s*([^#][^=]*)=(.*)$") {
         $key = $matches[1].Trim()
         $val = $matches[2].Trim()
-        Set-Item -Path "Env:$key" -Value $val
+        Set-Item -Path "env:$key" -Value $val
     }
 }
 
@@ -32,7 +32,7 @@ Write-Host "Setting up Flash Array..."
 
 Write-Host "Setup completed."
 Write-Host "Mapping the Z: drive to a share..."
-net use "Z:\" "\\${Env:FA_DEMO_VIF_HOSTNAME}\multi" /USER:"${Env:FA_DEMO_USER_DOMAIN}\win_user" "password"
+net use "Z:\" "\\${env:FA_DEMO_VIF_HOSTNAME}\multi" /USER:"${env:FA_DEMO_USER_DOMAIN}\win_user" "password"
 
 # Clean up any existing files
 Remove-Item "Z:\*" -Force -Recurse -ErrorAction SilentlyContinue
@@ -43,12 +43,12 @@ New-Item -Path "Z:\shared_dir" -ItemType Directory | Out-Null
 Write-Host "Setting permissions on the shared directory..."
 
 
-if (${Env:FA_DEMO_USE_AD} -eq "true") {
-    $domainName = ${Env:FA_DEMO_USER_DOMAIN}
+if (${env:FA_DEMO_USE_AD} -eq "true") {
+    $domainName = ${env:FA_DEMO_USER_DOMAIN}
 } else {
-    $domainName = ${Env:FA_DEMO_VIF_HOSTNAME}
+    $domainName = ${env:FA_DEMO_VIF_HOSTNAME}
 }
-$domainController = ${Env:FA_DEMO_AD_HOSTNAME}
+$domainController = ${env:FA_DEMO_AD_HOSTNAME}
 
 try {
     $win_user_sid = (Get-ADUser "$domainName\win_user" -Server $domainController -Properties SID).SID.Value
