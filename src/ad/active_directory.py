@@ -24,7 +24,7 @@ class ActiveDirectory:
         self.domain_name = os.getenv('FA_DEMO_AD_DOMAIN_NAME', '')
         self.domain_suffix = os.getenv('FA_DEMO_AD_DOMAIN_TOP_LEVEL_SUFFIX', 'local')
         self.admin_user = os.getenv('FA_DEMO_AD_DOMAIN_ADMIN_USER', 'Administrator')
-        self.admin_password = os.getenv('FA_DEMO_AD_DOMAIN_ADMIN_PASSWORD')
+        self.admin_password = os.getenv('FA_DEMO_AD_DOMAIN_ADMIN_PASSWORD', '')
         self.dns_suffix = os.getenv('FA_DEMO_DNS_DOMAIN_SUFFIX', 'dev.purestorage.com')
         self.ad_ip = os.getenv('FA_DEMO_AD_HOSTNAME')
 
