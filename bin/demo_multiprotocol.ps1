@@ -19,7 +19,7 @@ Get-Content "$ROOT_DIR\.env" | ForEach-Object {
     if ($_ -match "^\s*([^#][^=]*)=(.*)$") {
         $key = $matches[1].Trim()
         $val = $matches[2].Trim()
-        Set-Item -Path "$key" -Value $val
+        Set-Item -Path "Env:$key" -Value $val
     }
 }
 
@@ -30,8 +30,8 @@ Write-Host "Setting up Flash Array..."
 
 Write-Host "Setup completed."
 Write-Host "Mapping the Z: drive to a share..."
-Write-Host "NET USE Z: \\${FA_DEMO_VIF_HOSTNAME}\multi /USER:${FA_DEMO_USER_DOMAIN}\win_user password"
-net use Z: "\\${FA_DEMO_VIF_HOSTNAME}\multi" /USER:"${FA_DEMO_USER_DOMAIN}\win_user" "password"
+Write-Host "NET USE Z: \\${Env:FA_DEMO_VIF_HOSTNAME}\multi /USER:${Env:FA_DEMO_USER_DOMAIN}\win_user password"
+net use Z: "\\${Env:FA_DEMO_VIF_HOSTNAME}\multi" /USER:"${Env:FA_DEMO_USER_DOMAIN}\win_user" "password"
 
 # Clean up any existing files
 Remove-Item "Z:\*" -Force -Recurse -ErrorAction SilentlyContinue
@@ -42,13 +42,12 @@ New-Item -Path "Z:\shared_dir" -ItemType Directory | Out-Null
 Write-Host "Setting permissions on the shared directory..."
 
 
-if ($FA_DEMO_USE_AD -eq "true") {
-    $domainName = ${FA_DEMO_USER_DOMAIN}
+if (${Env:FA_DEMO_USE_AD} -eq "true") {
+    $domainName = ${Env:FA_DEMO_USER_DOMAIN}
 } else {
-    $domainName = ${FA_DEMO_VIF_HOSTNAME}
+    $domainName = ${Env:FA_DEMO_VIF_HOSTNAME}
 }
-$domainName = ${FA_DEMO_USER_DOMAIN}
-$domainController = ${FA_DEMO_AD_HOSTNAME}
+$domainController = ${Env:FA_DEMO_AD_HOSTNAME}
 
 try {
     $win_user_sid = (Get-ADUser "$domainName\win_user" -Server $domainController -Properties SID).SID.Value
