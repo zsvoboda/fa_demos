@@ -29,7 +29,7 @@ class ActiveDirectory:
         self.ad_ip = os.getenv('FA_DEMO_AD_HOSTNAME')
 
         if not self.admin_password:
-            raise ValueError("FA_DEMO_ADMIN_PASSWORD is required but not set.")
+            raise ValueError("FA_DEMO_AD_DOMAIN_ADMIN_PASSWORD is required but not set.")
 
         # AD Server details
         ad_hostname = self.ad_ip or f'{self.domain_name}.{self.dns_suffix}'
