@@ -99,13 +99,13 @@ if (${env:FA_DEMO_USE_AD} -eq "true") {
 $domainController = ${env:FA_DEMO_AD_HOSTNAME}
 
 try {
-    $win_user_sid = (Get-ADUser "win_user" -Server $domainController -Properties SID).SID.Value
-    $nfs_daemon_sid = (Get-ADUser "nfs_daemon" -Server $domainController -Properties SID).SID.Value
+    $win_user_sid = (Get-ADGroup "win_users" -Server $domainController -Properties SID).SID.Value
+    $nfs_daemon_sid = (Get-ADGroup "nfs_daemons" -Server $domainController -Properties SID).SID.Value
     if (-not $win_user_sid -or -not $nfs_daemon_sid) {
-        Write-Host "❌ Failed to retrieve SIDs for win_user or nfs_daemon."
+        Write-Host "❌ Failed to retrieve SIDs for win_users or nfs_daemons group."
         exit 1
     }
-    Write-Host "✅ Retrieved win_user's SID: $win_user_sid and nfs_daemon SID: $nfs_daemon_sid"
+    Write-Host "✅ Retrieved win_users group's SID: $win_user_sid and nfs_daemons group's SID: $nfs_daemon_sid"
     Add-RawSidAcl -Path "Z:\shared_dir" -Sid "${win_user_sid}"
     Add-RawSidAcl -Path "Z:\shared_dir" -Sid "${nfs_daemon_sid}"
 
