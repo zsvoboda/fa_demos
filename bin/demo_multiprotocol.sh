@@ -50,7 +50,7 @@ fi
 
 read -n 1 -s -r -p "Press any key to clean up ..."
 
-sudo rmdir -f /mnt/multi/shared_dir
+sudo rm -rf /mnt/multi/shared_dir
 sudo umount /mnt/multi
 sudo rmdir /mnt/multi
 echo "Unmounted and removed /mnt/multi directory."
