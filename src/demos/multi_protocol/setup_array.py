@@ -70,6 +70,7 @@ def setup(fa):
     
     # Create local user
     try:
+        _logger.info("Creating local user demo.")
         fa.create_local_user(
             name=os.getenv('FA_DEMO_USER_NAME', 'demo'), 
             uid=1001, 
@@ -82,12 +83,14 @@ def setup(fa):
 
     # Create filesystem
     try:
+        _logger.info("Creating file system 'multi_protocol_file_system'.")
         fa.create_file_system('multi_protocol_file_system')
     except Exception as e:
         _logger.error(f"Error creating file system 'multi_protocol_file_system'. Error message '{e}'.")
     
     # Create NFS policies
     try:
+        _logger.info("Creating NFS policy 'nfs_multi_protocol_access_policy'.")
         fa.create_policy_nfs(name='nfs_multi_protocol_access_policy', disable_user_mapping=False)
         fa.create_policy_nfs_rule(policy_name='nfs_multi_protocol_access_policy', client='*', access='all-squash',
                               anonuid='9050', anongid='9050', nfs_version='nfsv4', security='auth_sys',
@@ -97,6 +100,7 @@ def setup(fa):
     
     # Create SMB policies
     try:
+        _logger.info("Creating SMB policy 'smb_multi_protocol_access_policy'.")
         fa.create_policy_smb(name='smb_multi_protocol_access_policy')
         fa.create_policy_smb_rule(policy_name='smb_multi_protocol_access_policy', client='*')
     except Exception as e:
@@ -104,10 +108,12 @@ def setup(fa):
 
     # Export managed directory
     try:
+        _logger.info("Exporting managed directory over NFS.")
         fa.export_managed_directory_nfs(policy_name='nfs_multi_protocol_access_policy',
                                     managed_directory_name='multi_protocol_file_system:root',
                                     export_name='multi')
    
+        _logger.info("Exporting managed directory over SMB.")
         fa.export_managed_directory_smb(policy_name='smb_multi_protocol_access_policy',
                                     managed_directory_name='multi_protocol_file_system:root',
                                     export_name='multi')
