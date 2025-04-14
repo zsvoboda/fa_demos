@@ -43,8 +43,8 @@ else
     DEMO_DOMAIN="domain"
 fi
 
-sudo nfs4_setfacl -a "A:gfd:nfs_users@{$DEMO_DOMAIN}:RW" /mnt/multi/shared_dir
-sudo nfs4_setfacl -a "A:gfd:win_users@{$DEMO_DOMAIN}:RW" /mnt/multi/shared_dir
+sudo nfs4_setfacl -a "A:gfd:nfs_users@${DEMO_DOMAIN}:RW" /mnt/multi/shared_dir
+sudo nfs4_setfacl -a "A:gfd:win_users@${DEMO_DOMAIN}:RW" /mnt/multi/shared_dir
 
 echo "Test content written from NFS mounted drive." > /mnt/multi/shared_dir/file_from_linux_nfs_session.txt
 
