@@ -11,43 +11,35 @@ set PYTHONPATH=%ROOT_DIR%;%SRC_DIR%;%LIB_DIR%
 call %THIS_DIR%\..\.venv\Scripts\activate
 
 for /f "delims=" %%x in (%THIS_DIR%..\.env) do set %%x
-echo "Setting up Flash Array..."
 
-python %SRC_DIR%\demos\smb_ca\setup_array.py setup
-
-echo "Setup completed."
-echo "Please manually configure smb_ca_policy on the array to use SMB CA."
-pause
+if /i "%FA_DEMO_USE_AD%"=="true" (
+    echo "Using Active Directory for authentication."
+    set FA_DEMO_WIN_USER_FQDN=%FA_DEMO_AD_DOMAIN%\win_user    
+) else (
+    echo "Using FA local users."
+    set FA_DEMO_WIN_USER_FQDN="domain\win_user"
+)
 
 echo "Mapping the Z:\ drive to a share without SMB CA setting."
-NET USE Z: \\%FA_DEMO_VIF_HOSTNAME%\smb_no_ca /USER:%FA_DEMO_USER_DOMAIN%\%FA_DEMO_USER_NAME% %FA_DEMO_USER_PASSWORD%
+NET USE Z: \\%FA_DEMO_VIF_HOSTNAME%\multi /USER:%FA_DEMO_USER_DOMAIN%\%FA_DEMO_WIN_USER_FQDN% %FA_DEMO_USER_PASSWORD%
 del /q Z:\*
+if not exist Z:\shared_dir (
+    mkdir Z:\shared_dir
+)
+echo "Testing if Z:\file_from_linux_nfs_session.txt exists..."
+if exist Z:\file_from_linux_nfs_session.txt (
+    echo "File exists. Printing its content:"
+    type Z:\file_from_linux_nfs_session.txt
+) else (
+    echo "File Z:\file_from_linux_nfs_session.txt does not exist."
+)
 
-echo "Mapping the Y:\ drive to a share with SMB CA setting."
-NET USE Y: \\%FA_DEMO_VIF_HOSTNAME%\smb_ca /USER:%FA_DEMO_USER_DOMAIN%\%FA_DEMO_USER_NAME% %FA_DEMO_USER_PASSWORD%
-del /q Y:\*
-
-echo "Now, let's copy a large file to the mapped drive Z:\ without SMB CA enabled."
-pause
-
-echo "Large file copy in progress on SMB mapped drive Z:\ with SMB CA disabled ..."
-echo "This will take a while..."
-%THIS_DIR%\..\.venv\Scripts\python %SRC_DIR%\util\randcopy.py -n 6000000000 Z:\\test_file.bin
-
-echo "Now, let's copy a large file to the mapped drive Y:\ with SMB CA enabled."
-pause
-
-echo "Large file copy in progress on SMB mapped drive Y:\ with SMB CA enabled ..."
-echo "This will take a while..."
-%THIS_DIR%\..\.venv\Scripts\python %SRC_DIR%\util\randcopy.py -n 6000000000 Y:\\test_file.bin
+echo "Copying file to Z:\shared_dir\file_from_windows_smb_session.txt"
+echo "This file was created from a Windows SMB session." > Z:\shared_dir\file_from_windows_smb_session.txt
 
 echo "Click any key to clean up..."
 pause
 
 echo "Cleaning up..."
 NET USE Z: /DELETE
-NET USE Y: /DELETE
-
-python %SRC_DIR%\demos\smb_ca\setup_array.py cleanup
-
 echo "Cleanup completed."
