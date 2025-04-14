@@ -21,7 +21,7 @@ if /i "%FA_DEMO_USE_AD%"=="true" (
 )
 
 echo "Mapping the Z:\ drive to a share without SMB CA setting."
-NET USE Z: \\%FA_DEMO_VIF_HOSTNAME%\multi /USER:%FA_DEMO_USER_DOMAIN%\%FA_DEMO_WIN_USER_FQDN% %FA_DEMO_USER_PASSWORD%
+NET USE Z: \\%FA_DEMO_VIF_HOSTNAME%\multi /USER:%FA_DEMO_WIN_USER_FQDN% %FA_DEMO_USER_PASSWORD%
 del /q Z:\*
 if not exist Z:\shared_dir (
     mkdir Z:\shared_dir
