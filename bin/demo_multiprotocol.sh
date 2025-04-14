@@ -33,9 +33,18 @@ sudo chmod 777 /mnt/multi
 sudo mount -t nfs -o nfsvers=4.1 ${FA_DEMO_VIF_HOSTNAME}:/multi /mnt/multi
 
 sudo mkdir -p /mnt/multi/shared_dir
-sudo chown nfs_daemon:nfs_daemons /mnt/multi/shared_dir
-sudo nfs4_setfacl -a "A:gfd:9060:RW" /mnt/multi/shared_dir
-sudo nfs4_setfacl -a "A:gfd:9050:RW" /mnt/multi/shared_dir
+
+if [ "$FA_DEMO_USE_AD" = "true" ]; then
+    echo "Configuring Active Directory integration ..."
+    DEMO_DOMAIN="FA_DEMO_AD_DOMAIN_NAME"
+
+else
+    echo "Skipping Active Directory integration as FA_DEMO_USE_AD is not set to true."
+    DEMO_DOMAIN="domain"
+fi
+
+sudo nfs4_setfacl -a "A:gfd:nfs_users@{$DEMO_DOMAIN}:RW" /mnt/multi/shared_dir
+sudo nfs4_setfacl -a "A:gfd:win_users@{$DEMO_DOMAIN}:RW" /mnt/multi/shared_dir
 
 echo "Test content written from NFS mounted drive." > /mnt/multi/shared_dir/file_from_linux_nfs_session.txt
 
