@@ -20,7 +20,7 @@ if /i "%FA_DEMO_USE_AD%"=="true" (
     set FA_DEMO_WIN_USER_FQDN="domain\win_user"
 )
 
-echo "Mapping the Z:\ drive to a share without SMB CA setting."
+echo "Mapping the Z:\ drive to a share."
 NET USE Z: \\%FA_DEMO_VIF_HOSTNAME%\multi /USER:%FA_DEMO_WIN_USER_FQDN% %FA_DEMO_USER_PASSWORD%
 del /q Z:\*
 if not exist Z:\shared_dir (
