@@ -26,12 +26,12 @@ del /q Z:\*
 if not exist Z:\shared_dir (
     mkdir Z:\shared_dir
 )
-echo "Testing if Z:\file_from_linux_nfs_session.txt exists..."
-if exist Z:\file_from_linux_nfs_session.txt (
+echo "Testing if Z:\shared_dir\file_from_linux_nfs_session.txt exists..."
+if exist Z:\shared_dir\file_from_linux_nfs_session.txt (
     echo "File exists. Printing its content:"
-    type Z:\file_from_linux_nfs_session.txt
+    type Z:\shared_dir\file_from_linux_nfs_session.txt
 ) else (
-    echo "File Z:\file_from_linux_nfs_session.txt does not exist."
+    echo "File Z:\shared_dir\file_from_linux_nfs_session.txt does not exist."
 )
 
 echo "Copying file to Z:\shared_dir\file_from_windows_smb_session.txt"
