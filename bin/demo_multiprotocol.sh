@@ -14,26 +14,26 @@ set +a
 echo "Creating users and groups ..."
 
 if ! id "win_users" &>/dev/null; then
-    groupadd --gid 9060 win_users  
-    useradd --uid 9060 --gid 9060 win_user
+    sudo groupadd --gid 9060 win_users  
+    sudo useradd --uid 9060 --gid 9060 win_user
 fi
 
 if ! id "nfs_daemons" &>/dev/null; then
-    groupadd --gid 9050 nfs_daemons  
-    useradd --uid 9050 --gid 9050 nfs_daemon
+    sudo groupadd --gid 9050 nfs_daemons  
+    sudo useradd --uid 9050 --gid 9050 nfs_daemon
 fi
 
 python3 $SRC_DIR/demos/multi_protocol/setup_array.py "setup"
 
-mkdir -p /mnt/multi
-chmod 777 /mnt/multi
+sudo mkdir -p /mnt/multi
+sudo chmod 777 /mnt/multi
 
-mount -t nfs -o nfsvers=4.1 ${FA_DEMO_VIF_HOSTNAME}:/multi /mnt/multi
+sudo mount -t nfs -o nfsvers=4.1 ${FA_DEMO_VIF_HOSTNAME}:/multi /mnt/multi
 
-mkdir -p /mnt/multi/shared_dir
-chown nfs_daemon:nfs_daemons /mnt/multi/shared_dir
-nfs4_setfacl -a A:g:win_users:RW:fd /mnt/multi/shared_dir
-nfs4_setfacl -a A:g:nfs_daemons:RW:fd /mnt/multi/shared_dir
+sudo mkdir -p /mnt/multi/shared_dir
+sudo chown nfs_daemon:nfs_daemons /mnt/multi/shared_dir
+sudo nfs4_setfacl -a A:g:win_users:RW:fd /mnt/multi/shared_dir
+sudo nfs4_setfacl -a A:g:nfs_daemons:RW:fd /mnt/multi/shared_dir
 
 echo "Test content written from NFS mounted drive." > /mnt/multi/shared_dir/file_from_linux_nfs_session.txt
 
@@ -48,19 +48,19 @@ fi
 
 read -n 1 -s -r -p "Press any key to clean up ..."
 
-rmdir -f /mnt/multi/shared_dir
-umount /mnt/multi
-rmdir /mnt/multi
+sudo rmdir -f /mnt/multi/shared_dir
+sudo umount /mnt/multi
+sudo rmdir /mnt/multi
 echo "Unmounted and removed /mnt/multi directory."
 
 if id "win_users" &>/dev/null; then
-    userdel -rf win_user
-    groupdel -f win_users  
+    sudo userdel -rf win_user
+    sudo groupdel -f win_users  
 fi
 
 if ! id "nfs_daemons" &>/dev/null; then
-    userdel -rf nfs_daemon
-    groupdel -f nfs_daemons 
+    sudo userdel -rf nfs_daemon
+    sudo groupdel -f nfs_daemons 
 fi
 
 python3 $SRC_DIR/demos/multi_protocol/setup_array.py "cleanup"
