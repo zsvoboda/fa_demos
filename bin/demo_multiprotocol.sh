@@ -10,6 +10,8 @@ set -a
 source "$(dirname "$THIS_DIR")/.env"
 set +a
 
+. ./.venv/bin/activate
+
 # Create users and groups
 echo "Creating users and groups ..."
 
