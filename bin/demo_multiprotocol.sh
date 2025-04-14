@@ -10,10 +10,30 @@ set -a
 source "$(dirname "$THIS_DIR")/.env"
 set +a
 
-sudo mkdir -p /mnt/multi
-sudo chmod 777 /mnt/multi
+# Create users and groups
+echo "Creating users and groups ..."
 
-sudo mount -t nfs -o nfsvers=4.1 ${FA_DEMO_VIF_HOSTNAME}:/multi /mnt/multi
+if ! id "win_users" &>/dev/null; then
+    groupadd --gid 9060 win_users  
+    useradd --uid 9060 --gid 9060 win_user
+fi
+
+if ! id "nfs_daemons" &>/dev/null; then
+    groupadd --gid 9050 nfs_daemons  
+    useradd --uid 9050 --gid 9050 nfs_daemon
+fi
+
+python3 $SRC_DIR/demos/multi_protocol/setup_array.py "setup"
+
+mkdir -p /mnt/multi
+chmod 777 /mnt/multi
+
+mount -t nfs -o nfsvers=4.1 ${FA_DEMO_VIF_HOSTNAME}:/multi /mnt/multi
+
+mkdir -p /mnt/multi/shared_dir
+chown nfs_daemon:nfs_daemons /mnt/multi/shared_dir
+nfs4_setfacl -a A:g:win_users:RW:fd /mnt/multi/shared_dir
+nfs4_setfacl -a A:g:nfs_daemons:RW:fd /mnt/multi/shared_dir
 
 echo "Test content written from NFS mounted drive." > /mnt/multi/shared_dir/file_from_linux_nfs_session.txt
 
@@ -28,8 +48,21 @@ fi
 
 read -n 1 -s -r -p "Press any key to clean up ..."
 
-sudo rm -f /mnt/multi/shared_dir/file_from_linux_nfs_session.txt
-sudo umount /mnt/multi
-sudo rmdir /mnt/multi
+rmdir -f /mnt/multi/shared_dir
+umount /mnt/multi
+rmdir /mnt/multi
 echo "Unmounted and removed /mnt/multi directory."
+
+if id "win_users" &>/dev/null; then
+    userdel -rf win_user
+    groupdel -f win_users  
+fi
+
+if ! id "nfs_daemons" &>/dev/null; then
+    userdel -rf nfs_daemon
+    groupdel -f nfs_daemons 
+fi
+
+python3 $SRC_DIR/demos/multi_protocol/setup_array.py "cleanup"
+
 echo "Done."
