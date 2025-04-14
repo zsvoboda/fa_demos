@@ -126,9 +126,11 @@ def cleanup(fa):
     FA_DEMO_USE_AD = os.getenv("FA_DEMO_USE_AD")
     
     if FA_DEMO_USE_AD == 'true':
+        _logger.info("Deleting AD users and groups.")
         ad = ActiveDirectory()
         
         # Ensure Organizational Units exist
+        _logger.info("Ensuring Organizational Units exist.")
         try:
             ad.ensure_ou_exists("Groups")
             ad.ensure_ou_exists("Users")
@@ -136,6 +138,7 @@ def cleanup(fa):
             _logger.error(f"Error ensuring OU exists. Error message '{e}'.")
         
         # Delete AD users & groups
+        _logger.info("Deleting AD users and groups.")
         try:
             ad.delete_object(f'CN=win_user,CN=Users,{ad.base_dn}', 'User')
             ad.delete_object(f'CN=nfs_daemon,CN=Users,{ad.base_dn}', 'User')
@@ -147,7 +150,7 @@ def cleanup(fa):
         # Close the connection
         ad.close()        
     else:
-        _logger.info("Active Directory is not being used. Skipping user and group deletion.")
+        _logger.info("Active Directory is not being used. Deleting local users and groups.")
         # Delete local users
         fa.delete_local_user(name='nfs_daemon')
         fa.delete_local_user(name='win_user')
@@ -158,6 +161,7 @@ def cleanup(fa):
 
      # Delete exports and policies
     try:
+        _logger.info("Deleting NFS and SMB exports.")
         fa.delete_export(export_name='multi', policy_name='nfs_multi_protocol_access_policy')
         fa.delete_export(export_name='multi', policy_name='smb_multi_protocol_access_policy')
     except Exception as e:
@@ -165,13 +169,16 @@ def cleanup(fa):
 
     # Delete file system
     try:
+        _logger.info("Destroying file system 'multi_protocol_file_system'.")
         fa.destroy_file_system(name='multi_protocol_file_system')
+        _logger.info("Eradicating file system 'multi_protocol_file_system'.")
         fa.eradicate_file_system(name='multi_protocol_file_system')
     except Exception as e:
         _logger.error(f"Error deleting file system 'multi_protocol_file_system'. Error message '{e}'.")
     
     # Delete policies
     try: 
+        _logger.info("Deleting NFS and SMB policies.")
         fa.delete_policy_nfs(name='nfs_multi_protocol_access_policy')
         fa.delete_policy_smb(name='smb_multi_protocol_access_policy')
     except Exception as e:
@@ -179,6 +186,7 @@ def cleanup(fa):
 
     # Delete local user
     try:
+        _logger.info("Deleting local user 'demo'.")
         fa.delete_local_user(name=os.getenv('FA_DEMO_USER_NAME', 'demo'))
     except Exception as e:
         _logger.error(f"Error deleting local user. Error message '{e}'.")
