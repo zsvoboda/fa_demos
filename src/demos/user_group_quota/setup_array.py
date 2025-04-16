@@ -63,7 +63,7 @@ def setup(fa):
         fa.create_user_group_quota_policy(name='user_quota_policy')
         fa.create_user_group_quota_policy_rule(
                 policy_name='user_quota_policy',
-                quota_limit = 600 * 1024,
+                quota_limit = 300 * 1024,
                 quota_type = 'user-default',
                 enforced = True,
                 notifications = ['account'])
