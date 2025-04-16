@@ -44,34 +44,34 @@ def setup(fa):
         _logger.error(f"Error creating file system 'smb_no_ca_file_system'. Error message '{e}'.")
 
     try:
-        fa.create_policy_smb(name='smb_ca_policy', continuous_availability=True)
+        fa.create_smb_policy(name='smb_ca_policy', continuous_availability=True)
     except Exception as e:
         _logger.error(f"Error creating policy 'smb_ca_policy'. Error message '{e}'.")
 
     try:
-        fa.create_policy_smb_rule(policy_name='smb_ca_policy', client='*')
+        fa.create_smb_policy_rule(policy_name='smb_ca_policy', client='*')
     except Exception as e:
         _logger.error(f"Error creating policy rule for 'smb_ca_policy'. Error message '{e}'.")
 
     try:
-        fa.export_managed_directory_smb(policy_name='smb_ca_policy',
+        fa.attach_smb_policy_to_directory(policy_name='smb_ca_policy',
                                         managed_directory_name='smb_ca_file_system:root',
                                         export_name='smb_ca')
     except Exception as e:
         _logger.error(f"Error exporting managed directory for 'smb_ca_policy'. Error message '{e}'.")
 
     try:
-        fa.create_policy_smb(name='smb_no_ca_policy', continuous_availability=False)
+        fa.create_smb_policy(name='smb_no_ca_policy', continuous_availability=False)
     except Exception as e:
         _logger.error(f"Error creating policy 'smb_no_ca_policy'. Error message '{e}'.")
 
     try:
-        fa.create_policy_smb_rule(policy_name='smb_no_ca_policy', client='*')
+        fa.create_smb_policy_rule(policy_name='smb_no_ca_policy', client='*')
     except Exception as e:
         _logger.error(f"Error creating policy rule for 'smb_no_ca_policy'. Error message '{e}'.")
 
     try:
-        fa.export_managed_directory_smb(policy_name='smb_no_ca_policy',
+        fa.attach_smb_policy_to_directory(policy_name='smb_no_ca_policy',
                                         managed_directory_name='smb_no_ca_file_system:root',
                                         export_name='smb_no_ca')
     except Exception as e:
@@ -81,12 +81,12 @@ def cleanup(fa):
 
     # Delete exports and policies
     try:
-        fa.delete_export(export_name='smb_ca', policy_name='smb_ca_policy')
+        fa.delete_directory_export(export_name='smb_ca', policy_name='smb_ca_policy')
     except Exception as e:
         _logger.error(f"Error deleting export 'smb_ca'. Error message '{e}'.")
 
     try:
-        fa.delete_export(export_name='smb_no_ca', policy_name='smb_no_ca_policy')
+        fa.delete_directory_export(export_name='smb_no_ca', policy_name='smb_no_ca_policy')
     except Exception as e:
         _logger.error(f"Error deleting export 'smb_no_ca'. Error message '{e}'.")
 
@@ -105,12 +105,12 @@ def cleanup(fa):
 
     # Delete policies
     try:
-        fa.delete_policy_smb(name='smb_ca_policy')
+        fa.delete_smb_policy(name='smb_ca_policy')
     except Exception as e:
         _logger.error(f"Error deleting policy 'smb_ca_policy'. Error message '{e}'.")
 
     try:
-        fa.delete_policy_smb(name='smb_no_ca_policy')
+        fa.delete_smb_policy(name='smb_no_ca_policy')
     except Exception as e:
         _logger.error(f"Error deleting policy 'smb_no_ca_policy'. Error message '{e}'.")
 

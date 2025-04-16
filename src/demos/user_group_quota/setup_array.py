@@ -42,8 +42,8 @@ def setup(fa):
     # Create NFS policies
     try:
         _logger.info("Creating NFS policy 'nfs_user_quota_access_policy'.")
-        fa.create_policy_nfs(name='nfs_user_quota_access_policy', disable_user_mapping=False)
-        fa.create_policy_nfs_rule(policy_name='nfs_user_quota_access_policy', client='*', access='no-root-squash',
+        fa.create_nfs_policy(name='nfs_user_quota_access_policy', disable_user_mapping=False)
+        fa.create_nfs_policy_rule(policy_name='nfs_user_quota_access_policy', client='*', access='no-root-squash',
                                   nfs_version='nfsv4', security='auth_sys',
                                   permission='rw')
     except Exception as e:
@@ -52,20 +52,43 @@ def setup(fa):
     # Create SMB policies
     try:
         _logger.info("Creating SMB policy 'smb_user_quota_access_policy'.")
-        fa.create_policy_smb(name='smb_user_quota_access_policy')
-        fa.create_policy_smb_rule(policy_name='smb_user_quota_access_policy', client='*')
+        fa.create_smb_policy(name='smb_user_quota_access_policy')
+        fa.create_smb_policy_rule(policy_name='smb_user_quota_access_policy', client='*')
     except Exception as e:
         _logger.error(f"Error creating policy 'smb_user_quota_access_policy'. Error message '{e}'.")
+
+    # Create User Group Quota Policy
+    try:
+        _logger.info("Creating User Group Quota policy.")
+        fa.create_user_group_quota_policy(name='user_quota_policy')
+        fa.create_user_group_quota_policy_rule(
+                policy_name='user_quota_policy',
+                quota_limit = 100 * 1024,
+                quota_type = 'user-default',
+                enforced = True,
+                notifications = ['account'])
+    except Exception as e:
+        _logger.error(f"Error creating User Group Quota policy. Error message '{e}'.")
+
+    # Attach the User Group Quota policy to the root managed directory
+    try:
+        _logger.info("Attaching User Group Quota policy to the root managed directory.")
+        fa.attach_user_group_quota_policy_to_directory(
+            policy_name='user_quota_policy',
+            managed_directory_name='user_quota_file_system:root'
+        )
+    except Exception as e:
+        _logger.error(f"Error attaching User Group Quota policy to the root managed directory. Error message '{e}'.")
 
     # Export managed directory
     try:
         _logger.info("Exporting managed directory over NFS.")
-        fa.export_managed_directory_nfs(policy_name='nfs_user_quota_access_policy',
+        fa.attach_nfs_policy_to_directory(policy_name='nfs_user_quota_access_policy',
                                         managed_directory_name='user_quota_file_system:root',
                                         export_name='user_quota_export')
 
         _logger.info("Exporting managed directory over SMB.")
-        fa.export_managed_directory_smb(policy_name='smb_user_quota_access_policy',
+        fa.attach_smb_policy_to_directory(policy_name='smb_user_quota_access_policy',
                                         managed_directory_name='user_quota_file_system:root',
                                         export_name='user_quota_share')
     except Exception as e:
@@ -77,8 +100,8 @@ def cleanup(fa):
     # Delete exports and policies
     try:
         _logger.info("Deleting NFS and SMB exports.")
-        fa.delete_export(export_name='user_quota_export', policy_name='nfs_user_quota_access_policy')
-        fa.delete_export(export_name='user_quota_share', policy_name='smb_user_quota_access_policy')
+        fa.delete_directory_export(export_name='user_quota_export', policy_name='nfs_user_quota_access_policy')
+        fa.delete_directory_export(export_name='user_quota_share', policy_name='smb_user_quota_access_policy')
     except Exception as e:
         _logger.error(f"Error deleting NFS and SMB exports. Error message '{e}'.")
 
@@ -91,13 +114,20 @@ def cleanup(fa):
     except Exception as e:
         _logger.error(f"Error deleting file system 'user_quota_file_system'. Error message '{e}'.")
 
-    # Delete policies
+    # Delete export policies
     try:
         _logger.info("Deleting NFS and SMB policies.")
-        fa.delete_policy_nfs(name='nfs_user_quota_access_policy')
-        fa.delete_policy_smb(name='smb_user_quota_access_policy')
+        fa.delete_nfs_policy(name='nfs_user_quota_access_policy')
+        fa.delete_smb_policy(name='smb_user_quota_access_policy')
     except Exception as e:
         _logger.error(f"Error deleting policies. Error message '{e}'.")
+
+    # Delete User Group Quota Policies
+    try:
+        _logger.info("Deleting User Group Quota policy.")
+        fa.delete_user_group_quota_policy(name='user_quota_policy')
+    except Exception as e:
+        _logger.error(f"Error deleting User Group Quota policy. Error message '{e}'.")
 
     # Delete local user
     try:
