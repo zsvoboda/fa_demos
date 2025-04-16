@@ -26,7 +26,8 @@ pause
 
 echo "Large file copy in progress on SMB mapped drive Z:\ ..."
 echo "This will take a while..."
-%THIS_DIR%\..\.venv\Scripts\python %SRC_DIR%\util\randcopy.py -n 6000000000 Z:\\test_file.bin
+%THIS_DIR%\..\.venv\Scripts\python %SRC_DIR%\util\randcopy.py -n 60000 Z:\\test_file.bin
+%THIS_DIR%\..\.venv\Scripts\python %SRC_DIR%\util\randcopy.py -n 60000 Z:\\test_file2.bin
 
 echo "Click any key to clean up..."
 pause
