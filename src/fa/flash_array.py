@@ -256,41 +256,6 @@ class FlashArray:
         else:
             raise FlashArrayError(f"Policy with name='{policy_name}' or id = '{policy_id}' not found.")
 
-
-    def get_policies_attached_to_directory(self, managed_directory_name=None, managed_directory_id=None,
-                                                member_type=None):
-        """Return the array policies attached to a managed directory"""
-        r = self._client.get_policies_members(
-            member_names=[managed_directory_name] if managed_directory_name else None,
-            member_ids=[managed_directory_id] if managed_directory_id else None,
-            member_types=[member_type] if member_type else ['directories'])
-        return handle_response_with_items(r)
-
-    def attach_policy_to_directory(self, managed_directory_name=None, managed_directory_id=None,
-                                           policy_name=None, policy_id=None):
-        """Attach policy to managed directory"""
-        r = self._client.post_policies_members(
-            members=PolicyMemberPost(members=[
-                PolicymemberpostMembers(
-                    member=ReferenceWithType(
-                        name=managed_directory_name if managed_directory_name else None,
-                        id=managed_directory_id if managed_directory_id else None,
-                        resource_type='directories'))]),
-            policy_names=[policy_name] if policy_name else None,
-            policy_ids=[policy_id] if policy_id else None)
-        return handle_response_with_items(r)
-
-    def detach_policy_from_directory(self, managed_directory_name=None, managed_directory_id=None,
-                                             policy_name=None, policy_id=None):
-        """Detach policy from managed directory"""
-        r = self._client.delete_policies_members(
-            member_names=[managed_directory_name] if managed_directory_name else None,
-            member_ids=[managed_directory_id] if managed_directory_id else None,
-            policy_names=[policy_name] if policy_name else None,
-            policy_ids=[policy_id] if policy_id else None,
-            member_types=['directories'])
-        return handle_response_with_items(r)
-
     # Exports
     def get_directory_exports(self, directory_name=None, directory_id=None, policy_name=None, policy_id=None):
         """Return the array directory exports"""
@@ -512,7 +477,7 @@ class FlashArray:
         return handle_response_with_items(r)
 
     def attach_directory_quota_policy_to_directory(self, managed_directory_name=None, managed_directory_id=None,
-                                    policy_name=None, policy_id=None):
+                                    policy_name=None, policy_id=None, ignore_usage=True):
         """Attach quota policy to managed directory"""
         r = self._client.post_policies_quota_members(
             members=PolicyMemberPost(members=[
@@ -522,7 +487,9 @@ class FlashArray:
                         id=managed_directory_id if managed_directory_id else None,
                         resource_type='directories'))]),
             policy_names=[policy_name] if policy_name else None,
-            policy_ids=[policy_id] if policy_id else None)
+            policy_ids=[policy_id] if policy_id else None,
+            ignore_usage=ignore_usage
+        )
         return handle_response_with_items(r)
 
     def detach_directory_quota_policy_to_directory(self, managed_directory_name=None, managed_directory_id=None,
@@ -562,8 +529,8 @@ class FlashArray:
             quota_type=quota_type,
             enforced=enforced if enforced else None,
             quota_limit=quota_limit if quota_limit else None,
-            notifications=notifications if notifications else None)
-
+            notifications=notifications if notifications else None
+        )
         r = self._client.post_policies_user_group_quota_rules(rules=PolicyRuleUserGroupQuotaPost(rules=[rule]),
                                                    policy_names=[policy_name] if policy_name else None,
                                                    policy_ids=[policy_id] if policy_id else None)
@@ -587,19 +554,31 @@ class FlashArray:
         return handle_response_with_items(r)
 
     def attach_user_group_quota_policy_to_directory(self, managed_directory_name=None, managed_directory_id=None,
-                                    policy_name=None, policy_id=None):
+                                    policy_name=None, policy_id=None, ignore_usage=True):
         """Attach user & group quota policy to managed directory"""
-        return self.attach_policy_to_directory(managed_directory_name=managed_directory_name,
-                                                       managed_directory_id=managed_directory_id,
-                                                       policy_name=policy_name, policy_id=policy_id)
+        r = self._client.post_policies_user_group_quota_members(
+            members=PolicyMemberPost(members=[
+                PolicymemberpostMembers(
+                    member=ReferenceWithType(
+                        name=managed_directory_name if managed_directory_name else None,
+                        id=managed_directory_id if managed_directory_id else None,
+                        resource_type='directories'))]),
+            policy_names=[policy_name] if policy_name else None,
+            policy_ids=[policy_id] if policy_id else None,
+            ignore_usage=ignore_usage
+        )
+        return handle_response_with_items(r)
 
     def detach_user_group_quota_policy_from_directory(self, managed_directory_name=None, managed_directory_id=None,
                                               policy_name=None, policy_id=None):
         """Detach user & group quota policy from managed directory"""
-        return self.detach_policy_from_directory(managed_directory_name=managed_directory_name,
-                                                         managed_directory_id=managed_directory_id,
-                                                         policy_name=policy_name,
-                                                         policy_id=policy_id)
+        r = self._client.delete_policies_user_group_quota_members(
+            member_names=[managed_directory_name] if managed_directory_name else None,
+            member_ids=[managed_directory_id] if managed_directory_id else None,
+            policy_names=[policy_name] if policy_name else None,
+            policy_ids=[policy_id] if policy_id else None,
+            member_types=['directories'])
+        return handle_response_with_items(r)
 
     # Snapshot policies
     def create_snapshot_policy(self, name, enabled=True):
