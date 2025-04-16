@@ -21,10 +21,10 @@ echo "Mapping the Z:\ drive to the FlashArray share."
 NET USE Z: \\%FA_DEMO_VIF_HOSTNAME%\user_quota_share /USER:%FA_DEMO_USER_DOMAIN%\%FA_DEMO_USER_NAME% %FA_DEMO_USER_PASSWORD%
 del /q Z:\*
 
-echo "Now, let's copy multiple 50k files to the mapped drive Z:\."
+echo "Now, let's copy multiple 100k files to the mapped drive Z:\."
 pause
 
-echo "Multiple 50k files copy in progress on SMB mapped drive Z:\ ..."
+echo "Multiple 100k files copy in progress on SMB mapped drive Z:\ ..."
 for /l %%i in (1,1,9) do (
     %THIS_DIR%\..\.venv\Scripts\python %SRC_DIR%\util\randcopy.py -n 100000 Z:\\test_file%%i.bin
     timeout /t 10 /nobreak >nul
