@@ -24,10 +24,10 @@ del /q Z:\*
 echo "Now, let's copy a large file to the mapped drive Z:\."
 pause
 
-echo "Large file copy in progress on SMB mapped drive Z:\ ..."
-echo "This will take a while..."
-%THIS_DIR%\..\.venv\Scripts\python %SRC_DIR%\util\randcopy.py -n 60000 Z:\\test_file.bin
-%THIS_DIR%\..\.venv\Scripts\python %SRC_DIR%\util\randcopy.py -n 60000 Z:\\test_file2.bin
+echo "Multiple 50k files copy in progress on SMB mapped drive Z:\ ..."
+for /l %%i in (1,2,3,4,5,6,7,8,9) do (
+    %THIS_DIR%\..\.venv\Scripts\python %SRC_DIR%\util\randcopy.py -n 60000 Z:\\test_file%%i.bin
+)
 
 echo "Click any key to clean up..."
 pause
