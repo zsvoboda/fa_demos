@@ -25,9 +25,9 @@ echo "Now, let's copy multiple 100k files to the mapped drive Z:\."
 pause
 
 echo "Multiple 100k files copy in progress on SMB mapped drive Z:\ ..."
-for /l %%i in (1,1,9) do (
+for /l %%i in (1,1,100) do (
     %THIS_DIR%\..\.venv\Scripts\python %SRC_DIR%\util\randcopy.py -n 100000 Z:\\test_file%%i.bin
-    timeout /t 10 /nobreak >nul
+    timeout /t 1 /nobreak >nul
 )
 
 echo "Click any key to clean up..."
