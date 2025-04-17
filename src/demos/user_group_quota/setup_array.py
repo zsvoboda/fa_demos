@@ -21,12 +21,24 @@ load_env()
 def setup(fa):
     # Create local user
     try:
-        _logger.info("Creating local user demo.")
+        _logger.info("Creating local users.")
+        demo_user_name = os.getenv('FA_DEMO_USER_NAME', 'demo')
         fa.create_local_user(
-            name=os.getenv('FA_DEMO_USER_NAME', 'demo'),
+            name=demo_user_name,
             uid=1001,
             enabled=True,
             primary_group=ReferenceWithType(name='Administrators'),
+            password=os.getenv('FA_DEMO_USER_PASSWORD', 'password')
+        )
+        fa.create_local_group(
+            name=f"VIP",
+            gid=1002
+        )
+        fa.create_local_user(
+            name=f"{demo_user_name}_vip",
+            uid=1002,
+            enabled=True,
+            primary_group=ReferenceWithType(name='VIP'),
             password=os.getenv('FA_DEMO_USER_PASSWORD', 'password')
         )
     except Exception as e:
@@ -57,18 +69,26 @@ def setup(fa):
     except Exception as e:
         _logger.error(f"Error creating policy 'smb_user_quota_access_policy'. Error message '{e}'.")
 
-    # Create User Group Quota Policy
+    # Create Default User Quota policy
     try:
         _logger.info("Creating User Group Quota policy.")
         fa.create_user_group_quota_policy(name='user_quota_policy')
         fa.create_user_group_quota_policy_rule(
                 policy_name='user_quota_policy',
-                quota_limit = 300 * 1024,
+                quota_limit = 3000 * 1024,
                 quota_type = 'user-default',
                 enforced = True,
                 notifications = ['account'])
+        vip_group =list(fa.get_local_group(name='VIP'))
+        fa.create_user_group_quota_policy_rule(
+            policy_name='user_quota_policy',
+            quota_limit=30000 * 1024,
+            quota_type='user-group-member',
+            quota_subject_sid=vip_group[0].sid,
+            enforced=True,
+            notifications=['account'])
     except Exception as e:
-        _logger.error(f"Error creating User Group Quota policy. Error message '{e}'.")
+        _logger.error(f"Error creating Default User Quota policy. Error message '{e}'.")
 
     # Attach the User Group Quota policy to the root managed directory
     try:
@@ -124,15 +144,18 @@ def cleanup(fa):
 
     # Delete User Group Quota Policies
     try:
-        _logger.info("Deleting User Group Quota policy.")
+        _logger.info("Deleting User Group Quota policies.")
         fa.delete_user_group_quota_policy(name='user_quota_policy')
     except Exception as e:
         _logger.error(f"Error deleting User Group Quota policy. Error message '{e}'.")
 
-    # Delete local user
+    # Delete local users
     try:
         _logger.info("Deleting local user 'demo'.")
-        fa.delete_local_user(name=os.getenv('FA_DEMO_USER_NAME', 'demo'))
+        demo_user_name = os.getenv('FA_DEMO_USER_NAME', 'demo')
+        fa.delete_local_user(name=demo_user_name)
+        fa.delete_local_user(name=f"{demo_user_name}_vip")
+        fa.delete_local_group(name="VIP")
     except Exception as e:
         _logger.error(f"Error deleting local user. Error message '{e}'.")
 

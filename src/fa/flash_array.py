@@ -6,7 +6,7 @@ from pypureclient.flasharray import FileSystem, Directory, Pod, Policy, PolicyRu
     PolicyRuleSmbClient, PolicyRuleSmbClientPost, PolicyRuleQuota, PolicyRuleQuotaPost, PolicyRuleSnapshot, \
     PolicyRuleSnapshotPost, PolicyMemberExportPost, PolicymemberexportpostMembers, ReferenceWithType, \
     PolicyMemberPost, PolicymemberpostMembers, LocalGroup, LocalUserPost, LocalUserPatch, PolicyNfsPost, ErrorResponse, \
-    PolicySmbPatch, PolicyRuleUserGroupQuota, PolicyRuleUserGroupQuotaPost
+    PolicySmbPatch, PolicyRuleUserGroupQuota, PolicyRuleUserGroupQuotaPost, PolicyRuleUserGroupQuotaSubject
 
 import logging
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
@@ -70,8 +70,13 @@ class FlashArray:
         r = self._client.get_directory_services_local_groups()
         return handle_response_with_items(r)
 
+    def get_local_group(self, name):
+        """Return the array local group"""
+        r = self._client.get_directory_services_local_groups(names=[name])
+        return handle_response_with_items(r)
+
     def create_local_group(self, name, gid):
-        """Create a new local group"""
+        """Create a new local group by name"""
         g = LocalGroup(name=name, gid=gid)
         r = self._client.post_directory_services_local_groups(local_group=g, names=[name])
         return handle_response_with_items(r)
@@ -86,7 +91,12 @@ class FlashArray:
         r = self._client.get_directory_services_local_users()
         return handle_response_with_items(r)
 
-    def create_local_user(self, name, uid, primary_group, enabled, password, email=None):
+    def get_local_user(self, name):
+        """Return the array local user by name"""
+        r = self._client.get_directory_services_local_users(names=[name])
+        return handle_response_with_items(r)
+
+    def create_local_user(self, name, uid, primary_group, password, enabled=True, email=None):
         """Create a new local user"""
         u = LocalUserPost(uid=uid, enabled=enabled, password=password, primary_group=primary_group, email=email)
         r = self._client.post_directory_services_local_users(local_user=u, names=[name])
@@ -521,12 +531,18 @@ class FlashArray:
                                                   policy_ids=[policy_id] if policy_id else None)
         return handle_response_with_items(r)
 
-    def create_user_group_quota_policy_rule(self, quota_limit, quota_type='user-default', enforced=True, rule_name=None,
-                                 notifications=None, policy_name=None, policy_id=None):
+    def create_user_group_quota_policy_rule(self, quota_limit, quota_subject_name=None, quota_subject_id=None,
+                                            quota_subject_sid=None, quota_type='user-default', enforced=True,
+                                            rule_name=None, notifications=None, policy_name=None, policy_id=None):
         """Create a new user & group quota policy rule"""
+
+        quota_subject = PolicyRuleUserGroupQuotaSubject(id=quota_subject_id, sid=quota_subject_sid,
+                                                        name=quota_subject_name)
         rule = PolicyRuleUserGroupQuota(
             name=rule_name if rule_name else None,
             quota_type=quota_type,
+            subject= quota_subject if quota_subject_name is not None or quota_subject_sid is not None
+                                      or quota_subject_id is not None else None,
             enforced=enforced if enforced else None,
             quota_limit=quota_limit if quota_limit else None,
             notifications=notifications if notifications else None
