@@ -6,7 +6,8 @@ from pypureclient.flasharray import FileSystem, Directory, Pod, Policy, PolicyRu
     PolicyRuleSmbClient, PolicyRuleSmbClientPost, PolicyRuleQuota, PolicyRuleQuotaPost, PolicyRuleSnapshot, \
     PolicyRuleSnapshotPost, PolicyMemberExportPost, PolicymemberexportpostMembers, ReferenceWithType, \
     PolicyMemberPost, PolicymemberpostMembers, LocalGroup, LocalUserPost, LocalUserPatch, PolicyNfsPost, ErrorResponse, \
-    PolicySmbPatch, PolicyRuleUserGroupQuota, PolicyRuleUserGroupQuotaPost, PolicyRuleUserGroupQuotaSubject
+    PolicySmbPatch, PolicyRuleUserGroupQuota, PolicyRuleUserGroupQuotaPost, PolicyRuleUserGroupQuotaSubject, \
+    ArrayConnectionPost, PodPatch
 
 import logging
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
@@ -61,9 +62,29 @@ class FlashArray:
         self._array_host = array_host
         self._client = None
 
+    def get_array_hostname(self):
+        """Return the hostname of the FlashArray."""
+        return self._array_host
+
     def authenticate(self):
         """Authenticate to the array"""
         self._client = pypureclient.flasharray.Client(self._array_host, api_token=self._api_token)
+
+    def get_connection_key(self):
+        r = self._client.get_array_connections_connection_key()
+        return handle_response_with_items(r)
+
+    def connect_remote_array(self, remote_hostname, remote_connection_key, connection_type='async-replication',
+                             replication_transport='ip'):
+        r = self._client.post_array_connections(
+            array_connection=ArrayConnectionPost(
+                                connection_key=remote_connection_key,
+                                management_address=remote_hostname,
+                                type=connection_type,
+                                replication_transport=replication_transport
+                            )
+            )
+        return handle_response_with_items(r)
 
     def get_local_groups(self):
         """Return the array local groups"""
@@ -135,6 +156,25 @@ class FlashArray:
         """Eradicate a pod"""
         r = self._client.delete_pods(names=[name], eradicate_contents=eradicate_contents)
         return handle_response(r)
+
+    def demote_pod(self, name):
+        """Demote a pod"""
+        r = self._client.patch_pods(names=[name], pod=PodPatch(requested_promotion_state='demoted'))
+        return handle_response(r)
+
+    def create_pod_replica_link(self, remote_array_connection_name, source_pod_name, target_pod_name):
+        r = self._client.post_pod_replica_links(
+            remote_names=[remote_array_connection_name],
+            local_pod_names=[source_pod_name],
+            remote_pod_names=[target_pod_name],
+        )
+        return handle_response_with_items(r)
+
+    def delete_pod_replica_link(self, source_pod_name, target_pod_name):
+        r = self._client.delete_pod_replica_links(
+            local_pod_names=[source_pod_name],
+            remote_pod_names=[target_pod_name]
+        )
 
     def get_file_systems(self):
         """Return the array filesystems"""
