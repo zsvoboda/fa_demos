@@ -12,6 +12,18 @@ set +a
 
 . ./.venv/bin/activate
 
+echo "Multi-Protocol Demo"
+echo "==================="
+echo
+echo "This demo showcases how Linux NFS and Windows SMB users can collaboratively"
+echo "access and interact with the same shared directory for reading and writing files."
+echo
+echo "The demo demonstrates:"
+echo "- Unified storage accessible via both NFS and SMB protocols"
+echo "- Consistent permissions across different operating systems"
+echo "- Cross-platform file sharing and collaboration"
+echo
+
 # Create users and groups
 echo "Creating users and groups ..."
 

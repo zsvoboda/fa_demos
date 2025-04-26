@@ -11,6 +11,19 @@ set PYTHONPATH=%ROOT_DIR%;%SRC_DIR%;%LIB_DIR%
 call %THIS_DIR%\..\.venv\Scripts\activate
 
 for /f "delims=" %%x in (%THIS_DIR%..\.env) do set %%x
+
+echo "User and Group Quota Demo"
+echo "========================="
+echo.
+echo "This demo showcases the user and group quota functionality of FlashArray File Services,"
+echo "which allows administrators to limit storage consumption by specific users or groups."
+echo.
+echo "The demo demonstrates:"
+echo "- Setting up user and group quotas on a file system"
+echo "- Monitoring storage usage against quota limits"
+echo "- Behavior when quota limits are reached"
+echo.
+
 echo "Setting up Flash Array..."
 
 python %SRC_DIR%\demos\user_group_quota\setup_array.py setup

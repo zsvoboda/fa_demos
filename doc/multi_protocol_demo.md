@@ -1,8 +1,23 @@
 # Multi-Protocol Demo
 
-This demo showcases how Linux NFS and Windows SMB users can collaboratively access and interact with the same shared directory for reading and writing files. It highlights the seamless integration of FlashArray File Services in mixed-protocol environments.
+This demo showcases how Linux NFS and Windows SMB users can collaboratively access and interact with the same shared directory for reading and writing files. It highlights the seamless integration of FlashArray File Services in mixed-protocol environments, enabling cross-platform file sharing and collaboration.
+
+## Overview
+
+FlashArray File Services provides a unified storage solution that supports both NFS and SMB protocols simultaneously. This capability is essential for organizations with heterogeneous environments where both Linux and Windows systems need to access the same data. The multi-protocol feature ensures consistent file access, permissions, and data integrity across different operating systems.
 
 ---
+
+## Technical Background
+
+Multi-protocol access in FlashArray File Services enables:
+
+- **Unified Storage:** A single storage repository accessible via both NFS and SMB protocols
+- **Consistent Permissions:** Mapping between POSIX permissions (Linux) and NTFS ACLs (Windows)
+- **Identity Management:** Integration with Active Directory or local user authentication
+- **Data Integrity:** Proper file locking and concurrent access management across protocols
+
+This capability addresses the challenges of cross-platform file sharing in heterogeneous environments, eliminating the need for separate storage silos for different operating systems.
 
 ## Use Case Examples
 
@@ -14,7 +29,18 @@ This demo showcases how Linux NFS and Windows SMB users can collaboratively acce
     - A Linux process uploads a file to the shared directory using NFS.
     - A Windows user accesses the same file in the shared directory using SMB for reading or writing.
 
----
+3. **Collaborative Workflows:**
+    - Development teams using different operating systems can collaborate on the same codebase.
+    - Media production environments can process files using specialized tools on different platforms.
+    - Enterprise applications can access the same data from both Windows and Linux servers.
+
+## Prerequisites
+
+- Linux system with NFS client capabilities
+- Windows system with SMB client capabilities
+- Network connectivity to the FlashArray
+- Python environment installed and activated (see [readme](./readme.md) for setup instructions)
+- Administrative access to the FlashArray for configuring export policies
 
 ## Environment Details
 
@@ -26,9 +52,7 @@ This demo showcases how Linux NFS and Windows SMB users can collaboratively acce
   - `win_user` (UID=9060): Member of the `win_users` group.
   - `nfs_daemon` (UID=9050): Member of the `nfs_daemons` group.
 
----
-
-## Demo Overview
+## Demo Configuration
 
 ### File System and Managed Directory Setup
 
@@ -38,7 +62,7 @@ The demo provisions a file system named `multi_protocol_file_system` with a shar
 - **Setup Scripts:**
   - [`./src/demos/multi_protocol/setup_array.py`](./src/demos/multi_protocol/setup_array.py): Python script for provisioning the file system and configuring export policies.
 
-### Configuration
+### Protocol Configuration
 
 - **NFS Access:** All NFS access is squashed (`all-squash`) to the `nfs_daemon` user (UID=9050) and the `nfs_daemons` group (GID=9050). This ensures consistent ownership and permissions for files created via NFS.
 - **Export Policies:** 
@@ -111,6 +135,27 @@ Refer to the [`./src/demos/multi_protocol/setup_array.py`](./src/demos/multi_pro
 
 ---
 
+## Troubleshooting Tips
+
+- If you encounter permission issues when accessing files across protocols, verify that:
+  - The directory permissions are correctly set using `nfs4_setfacl`
+  - User and group mappings are properly configured
+  - The export policies have the correct settings
+- If the NFS mount fails, check that:
+  - The NFS client is properly installed on your Linux system
+  - The export policy allows access from your client's IP address
+  - The correct NFS version is being used (NFSv4)
+- If the SMB share is not accessible, verify that:
+  - The Windows system can resolve the FlashArray hostname
+  - The user credentials are correct
+  - The SMB export policy is properly configured
+- For general connectivity issues:
+  - Check network connectivity between clients and the FlashArray
+  - Verify that the environment variables in the `.env` file are correctly set
+  - Ensure that the FlashArray is properly configured for file services
+
 ## Summary
 
 This demo demonstrates the ability of FlashArray File Services to handle mixed-protocol environments effectively. By enabling seamless collaboration between Linux NFS and Windows SMB users, it provides a robust solution for applications requiring multi-protocol access, such as Epic. The setup ensures secure and consistent file access across platforms, making it an ideal choice for enterprise environments.
+
+The multi-protocol capability eliminates the need for data duplication across separate storage systems, simplifies data management, and enhances collaboration between teams using different operating systems. This feature is particularly valuable in modern heterogeneous IT environments where cross-platform access to shared data is increasingly important.

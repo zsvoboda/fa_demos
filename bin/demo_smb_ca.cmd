@@ -11,6 +11,20 @@ set PYTHONPATH=%ROOT_DIR%;%SRC_DIR%;%LIB_DIR%
 call %THIS_DIR%\..\.venv\Scripts\activate
 
 for /f "delims=" %%x in (%THIS_DIR%..\.env) do set %%x
+
+echo "SMB Continuous Availability Demo"
+echo "================================"
+echo.
+echo "This demo showcases the capabilities of SMB Continuous Availability (SMB CA),"
+echo "a critical feature for enterprise environments requiring high availability"
+echo "for Windows file shares."
+echo.
+echo "The demo demonstrates:"
+echo "- Seamless transition of SMB clients during controller failover"
+echo "- Preservation of file locks and open file handles"
+echo "- Comparison between shares with and without SMB CA enabled"
+echo.
+
 echo "Setting up Flash Array..."
 
 python %SRC_DIR%\demos\smb_ca\setup_array.py setup

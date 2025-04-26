@@ -7,7 +7,7 @@ from pypureclient.flasharray import FileSystem, Directory, Pod, Policy, PolicyRu
     PolicyRuleSnapshotPost, PolicyMemberExportPost, PolicymemberexportpostMembers, ReferenceWithType, \
     PolicyMemberPost, PolicymemberpostMembers, LocalGroup, LocalUserPost, LocalUserPatch, PolicyNfsPost, ErrorResponse, \
     PolicySmbPatch, PolicyRuleUserGroupQuota, PolicyRuleUserGroupQuotaPost, PolicyRuleUserGroupQuotaSubject, \
-    ArrayConnectionPost, PodPatch
+    ArrayConnectionPost, PodPatch, MappingPolicyPatch
 
 import logging
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
@@ -170,11 +170,36 @@ class FlashArray:
         )
         return handle_response_with_items(r)
 
+    def get_pod_replica_links(self, source_pod_name, target_pod_name):
+        r = self._client.get_pod_replica_links(
+            local_pod_names=[source_pod_name],
+            remote_pod_names=[target_pod_name],
+        )
+        return handle_response_with_items(r)
+
+    def get_pod_replica_link_policy_mappings(self, source_pod_name, target_pod_name):
+        r = self._client.get_pod_replica_links_mappings_policies(
+            local_pod_names=[source_pod_name],
+            remote_pod_names=[target_pod_name],
+        )
+        return handle_response_with_items(r)
+
     def delete_pod_replica_link(self, source_pod_name, target_pod_name):
         r = self._client.delete_pod_replica_links(
             local_pod_names=[source_pod_name],
             remote_pod_names=[target_pod_name]
         )
+        return handle_response(r)
+
+    def change_pod_replica_link_policy_mapping(self, target_pod_name, policy_name, policy_connection_status='connected'):
+        r = self._client.patch_pod_replica_links_mappings_policies(
+            local_pod_names=[target_pod_name],
+            remote_policy_names=[policy_name],
+            mapping=MappingPolicyPatch(
+                mapping=policy_connection_status
+            )
+        )
+        return handle_response(r)
 
     def get_file_systems(self):
         """Return the array filesystems"""

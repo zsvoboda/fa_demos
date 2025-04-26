@@ -1,5 +1,6 @@
 import sys
 import os
+import time
 
 from ad.active_directory import ActiveDirectory
 from fa import FlashArray
@@ -55,7 +56,6 @@ def setup(_fa_source, _fa_target):
         )
     except Exception as e:
         _logger.error(f"Error creating source snapshot policy. Error message '{e}'.")
-
     '''
     # Create target pod
     try:
@@ -63,13 +63,6 @@ def setup(_fa_source, _fa_target):
         _fa_target.create_pod('replicated-target')
     except Exception as e:
         _logger.error(f"Error creating replicated-target pod. Error message '{e}'.")
-
-    # Create Target Snapshot Policy
-    try:
-        _logger.info("Creating snapshot policy 'replicated-target::no_snapshot_policy'.")
-        _fa_target.create_snapshot_policy(name='replicated-target::no_snapshot_policy')
-    except Exception as e:
-        _logger.error(f"Error creating target snapshot policy. Error message '{e}'.")
 
     # Demote target pod
     try:
@@ -110,13 +103,13 @@ def setup(_fa_source, _fa_target):
         _fa_source.attach_nfs_policy_to_directory(
             policy_name='replicated-source::nfs_access_policy',
             managed_directory_name='replicated-source::file_system:root',
-            export_name='nfs_export'
+            export_name='replicated_nfs_export'
         )
         _logger.info("Exporting managed directory over SMB.")
         _fa_source.attach_smb_policy_to_directory(
             policy_name='replicated-source::smb_access_policy',
             managed_directory_name='replicated-source::file_system:root',
-            export_name='smb_share'
+            export_name='replicated_smb_share'
         )
     except Exception as e:
         _logger.error(f"Error exporting managed directory. Error message '{e}'.")
@@ -150,6 +143,33 @@ def setup(_fa_source, _fa_target):
     except Exception as e:
         _logger.error(f"Error creating source replica link. Error message '{e}'.")
 
+    mapped_policy_names = []
+    # does policies include 'a','b','c'
+    while not {'replicated-source::nfs_access_policy', 'replicated-source::smb_access_policy', 'replicated-source::every_hour_snapshot_policy'}.issubset(
+            mapped_policy_names):
+        mapped_policies = list(_fa_target.get_pod_replica_link_policy_mappings(source_pod_name='replicated-target', target_pod_name='replicated-source'))
+        mapped_policy_names = set(map(lambda pm: pm.remote_policy.name, mapped_policies))
+        mapped_policy_mappings = set(map(lambda pm: pm.mapping, mapped_policies))
+        _logger.info("Waiting 10 more seconds for the policies to be replicated.")
+        time.sleep(10)
+
+
+    # Change the export policies mapping on the target array to connected
+    try:
+        _logger.info("Changing the export policies mapping on the target array.")
+
+        _fa_target.change_pod_replica_link_policy_mapping(
+            target_pod_name='replicated-target',
+            policy_name='replicated-source::nfs_access_policy',
+            policy_connection_status='connected'
+        )
+        _fa_target.change_pod_replica_link_policy_mapping(
+            target_pod_name='replicated-target',
+            policy_name='replicated-source::smb_access_policy',
+            policy_connection_status='connected'
+        )
+    except Exception as e:
+        _logger.error(f"Error changing the export policies mapping to connected on the target array. Error message '{e}'.")
 
 def cleanup(_fa_source, _fa_target):
     
@@ -168,8 +188,8 @@ def cleanup(_fa_source, _fa_target):
     # Delete target exports
     try:
         _logger.info("Deleting target NFS and SMB exports.")
-        _fa_target.delete_directory_export(export_name='nfs_export', policy_name='replicated-target::nfs_access_policy')
-        _fa_target.delete_directory_export(export_name='smb_share', policy_name='replicated-target::smb_access_policy')
+        _fa_target.delete_directory_export(export_name='replicated_nfs_export', policy_name='replicated-target::nfs_access_policy')
+        _fa_target.delete_directory_export(export_name='replicated_smb_share', policy_name='replicated-target::smb_access_policy')
     except Exception as e:
         _logger.error(f"Error deleting NFS and SMB exports. Error message '{e}'.")
 
@@ -184,9 +204,9 @@ def cleanup(_fa_source, _fa_target):
     # Delete source exports
     try:
         _logger.info("Deleting source NFS and SMB exports.")
-        _fa_source.delete_directory_export(export_name='nfs_export',
+        _fa_source.delete_directory_export(export_name='replicated_nfs_export',
                                            policy_name='replicated-source::nfs_access_policy')
-        _fa_source.delete_directory_export(export_name='smb_share',
+        _fa_source.delete_directory_export(export_name='replicated_smb_share',
                                            policy_name='replicated-source::smb_access_policy')
     except Exception as e:
         _logger.error(f"Error deleting NFS and SMB exports. Error message '{e}'.")

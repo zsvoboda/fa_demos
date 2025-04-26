@@ -12,6 +12,18 @@ call %THIS_DIR%\..\.venv\Scripts\activate
 
 for /f "delims=" %%x in (%THIS_DIR%..\.env) do set %%x
 
+echo "Multi-Protocol Demo"
+echo "==================="
+echo.
+echo "This demo showcases how Linux NFS and Windows SMB users can collaboratively"
+echo "access and interact with the same shared directory for reading and writing files."
+echo.
+echo "The demo demonstrates:"
+echo "- Unified storage accessible via both NFS and SMB protocols"
+echo "- Consistent permissions across different operating systems"
+echo "- Cross-platform file sharing and collaboration"
+echo.
+
 if /i "%FA_DEMO_USE_AD%"=="true" (
     echo "Using Active Directory for authentication."
     set FA_DEMO_WIN_USER_FQDN=%FA_DEMO_AD_DOMAIN%\win_user    
