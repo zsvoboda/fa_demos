@@ -123,8 +123,171 @@ The demo provisions a pod named `replicated-source` on the source array and crea
 
 ---
 
-## Summary
+## Configuration Using CLI Commands
 
+The following instructions describe in detail how to configure and then clean up the Active Disaster Recovery (DR) 
+demonstration environment on a Pure Storage FlashArray instance using the command-line interface (CLI). 
+We will cover both creating the necessary resources for the demo on the source array and tearing them down on both 
+the source and target arrays.
+
+---
+
+### Setting Up on the Source Array
+Perform the following steps on the **source** FlashArray to prepare the data and replication configuration.
+
+#### Create and Enable a Local User
+Create a new local administrator account named `demo` with a fixed UID and a secure password:
+
+```bash
+pureds local user create   --primary-group Administrators   --uid 1001   --password password
+pureds local user enable demo
+```
+
+- The `--primary-group` flag adds the user to the `Administrators` group.
+- The `--uid` parameter sets a consistent user ID of `1001`.
+- The second command enables the newly created user account.
+
+#### Create the Source Pod and Filesystem
+Establish the source pod and create a file system named `replicated-source`:
+
+```bash
+purepod create replicated-source
+purefs create replicated-source::file_system
+```
+
+- `purepod create` initializes a new pod named `replicated-source`.
+- `purefs create` provisions a file system under that pod.
+
+#### Configure Snapshot Policy
+Create an hourly snapshot policy and assign it to the file system's root managed directory:
+
+```bash
+purepolicy snapshot create replicated-source::every_hour_snapshot_policy
+purepolicy snapshot rule add   replicated-source::every_hour_snapshot_policy   --every 1h   --keep-for 1d   --client-name every_hour_snapshot
+
+puredir snapshot add   --policy replicated-source::every_hour_snapshot_policy   replicated-source::file_system:root
+```
+
+- The snapshot policy runs every 1 hour and retains snapshots for 24 hours.
+- `puredir snapshot add` applies the policy to the root managed directory of the file system.
+
+#### Configure Access Policies for NFS and SMB
+Create an NFS access policy allowing all clients full read-write access without root squashing, using NFSv4 and `AUTH_SYS` security:
+
+```bash
+purepolicy nfs create replicated-source::nfs_access_policy
+purepolicy nfs rule add   replicated-source::nfs_access_policy   --client '*'   --no-root-squash   --version nfsv4   --security auth_sys   --rw
+```
+
+Create an SMB access policy allowing all clients:
+
+```bash
+purepolicy smb create replicated-source::smb_access_policy
+purepolicy smb rule add   replicated-source::smb_access_policy   --client '*'
+```
+
+#### Export the Directory Over NFS and SMB
+Export the file system root managed directory using the policies defined above:
+
+```bash
+puredir export create   --dir  replicated-source::file_system:root   --policy replicated-source::nfs_access_policy   replicated_nfs_export
+puredir export create   --dir  replicated-source::file_system:root   --policy replicated-source::smb_access_policy   replicated_smb_share
+```
+
+- These commands create two exports: one for NFS (`replicated_nfs_export`) and one for SMB (`replicated_smb_share`).
+
+#### Establish Asynchronous Replication to Target Array
+
+1. On the **target** array, retrieve the replication connection key:
+
+```bash
+# On the target array management console:
+purearray list --connection-key
+```
+
+2. Back on the **source** array, connect to the target using the management IP and the key from step 1:
+
+```bash
+purearray connect  --management-address <TARGET_MGMT_IP_ADDRESS>  --type async-replication  --connection-key <PASTED_KEY>
+```
+
+3. Still on the source array, create the replica link between pods. Replace `<TARGET_ARRAY_NAME>` with the name assigned by `purearray` (usually the hostname):
+
+```bash
+purepod replica-link create  --remote-pod replicated-target  --remote <TARGET_ARRAY_NAME>  replicated-source
+```
+
+4. Monitor the replication status until the link status shows `replicating`:
+
+```bash
+purepod replica-link list
+```
+
+---
+
+### Setting Up on the Target Array
+
+Once the replicated-source pod is linked to the target, configure policy mapping on the **target** array:
+
+```bash
+# Connect the NFS access policy from the source
+purepod replica-link mapping policy connect   --remote-policy replicated-source::nfs_access_policy   replicated-target
+# Connect the SMB access policy from the source
+purepod replica-link mapping policy connect   --remote-policy replicated-source::smb_access_policy   replicated-target
+```
+- These commands ensure that the NFS and SMB export policies are enforced on the target side. Two new exports are created on the target array. 
+
+---
+
+### 3. Cleaning Up the Demo Environment
+
+After you have completed your Active DR demonstration, remove all resources on both arrays to restore them to their 
+original state.
+
+#### 3.1 Cleanup on the Source Array
+
+Execute the following commands on the **source** array:
+
+1. Delete the NFS and SMB exports:
+
+```bash
+puredir export delete replicated_nfs_export
+puredir export delete replicated_smb_share
+```
+
+2. Remove the replica link and destroy the source pod:
+
+```bash
+purepod replica-link delete --remote-pod replicated-target   replicated-source
+purepod destroy replicated-source --destroy-contents
+purepod eradicate replicated-source --eradicate-contents
+```
+
+3. Delete the `demo` user account:
+
+```bash
+pureds local user delete demo
+```
+
+#### Cleanup on the Target Array
+
+Connect to the **target** array management console and execute:
+
+1. Delete any exports created during policy mapping (if applicable):
+
+```bash
+puredir export delete replicated_nfs_export
+puredir export delete replicated_smb_share
+```
+
+2. Destroy and eradicate the target pod:
+
+```bash
+purepod destroy replicated-target --destroy-contents
+purepod eradicate replicated-target --eradicate-contents
+```
+
+## Summary
 This demo demonstrates the Active DR functionality of FlashArray File Services, showcasing how to 
 set up replication between two arrays for disaster recovery purposes. By replicating file data from 
 a source array to a target array, organizations can ensure data protection and business continuity in case 

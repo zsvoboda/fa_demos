@@ -154,6 +154,75 @@ Refer to the [`./src/demos/multi_protocol/setup_array.py`](./src/demos/multi_pro
   - Verify that the environment variables in the `.env` file are correctly set
   - Ensure that the FlashArray is properly configured for file services
 
+## Configuration Using CLI Commands
+
+This section provides detailed instructions for manually setting up and cleaning up the multiprotocol demo environment using CLI commands on the FlashArray.
+
+### Setup
+
+```bash
+# Create local groups for NFS and SMB users
+pureds local group create --gid 9050 nfs_daemons
+pureds local group create --gid 9060 win_users
+
+# Create local users and assign them to their respective groups
+pureds local user create --primary-group nfs_daemons --uid 9050 --password nfs_daemon
+pureds local user enable nfs_daemon
+pureds local user create --primary-group win_users --uid 9060 --password win_user
+pureds local user enable win_user
+
+# Create a new file system that will serve as the storage container for shared data
+purefs create multi_protocol_file_system
+
+# Define an NFS export policy to control NFS access
+purepolicy nfs create nfs_multi_protocol_access_policy
+purepolicy nfs rule add nfs_multi_protocol_access_policy --client '*' --all-squash --anonuid 9050 --anongid 9050 --version nfsv4 --security auth_sys --rw 
+
+# Define an SMB export policy to control SMB access
+purepolicy smb create smb_multi_protocol_access_policy
+purepolicy smb rule add smb_multi_protocol_access_policy --client '*' 
+
+# Attach the export policies to the managed directory at the root of the file system
+puredir export create --dir multi_protocol_file_system:root --policy nfs_multi_protocol_access_policy multi
+puredir export create --dir multi_protocol_file_system:root --policy smb_multi_protocol_access_policy multi
+```
+
+### Cleanup
+After completing the demo, it is important to clean up the environment by removing the created resources:
+
+```bash
+# Remove the NFS export from the managed directory
+puredir export delete --policy nfs_multi_protocol_access_policy multi
+
+# Remove the SMB export from the managed directory
+puredir export delete --policy smb_multi_protocol_access_policy multi
+
+# Destroy the file system that was created for the demo
+purefs destroy multi_protocol_file_system
+
+# Permanently eradicate the destroyed file system to free up the underlying storage
+purefs eradicate multi_protocol_file_system
+
+# Delete the NFS export policy to clean up policy configurations
+purepolicy nfs delete nfs_multi_protocol_access_policy
+
+# Delete the SMB export policy to clean up policy configurations
+purepolicy smb delete smb_multi_protocol_access_policy
+
+# Delete the local user account used for NFS operations
+pureds local user delete nfs_daemon
+
+# Delete the local user account used for SMB operations
+pureds local user delete win_user
+
+# Delete the local group associated with Linux NFS users
+pureds local group delete nfs_daemons
+
+# Delete the local group associated with Windows SMB users
+pureds local group delete win_users
+```
+
+
 ## Summary
 
 This demo demonstrates the ability of FlashArray File Services to handle mixed-protocol environments effectively. By enabling seamless collaboration between Linux NFS and Windows SMB users, it provides a robust solution for applications requiring multi-protocol access, such as Epic. The setup ensures secure and consistent file access across platforms, making it an ideal choice for enterprise environments.
