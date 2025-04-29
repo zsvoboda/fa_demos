@@ -172,11 +172,11 @@ puredir snapshot add   --policy replicated-source::every_hour_snapshot_policy   
 - `puredir snapshot add` applies the policy to the root managed directory of the file system.
 
 #### Configure Access Policies for NFS and SMB
-Create an NFS access policy allowing all clients full read-write access without root squashing, using NFSv4 and `AUTH_SYS` security:
+Create an NFS access policy allowing all clients full read-write access without root squashing, using NFSv3 and `AUTH_SYS` security:
 
 ```bash
 purepolicy nfs create replicated-source::nfs_access_policy
-purepolicy nfs rule add   replicated-source::nfs_access_policy   --client '*'   --no-root-squash   --version nfsv4   --security auth_sys   --rw
+purepolicy nfs rule add   replicated-source::nfs_access_policy   --client '*'   --no-root-squash   --version nfsv3   --security auth_sys   --rw
 ```
 
 Create an SMB access policy allowing all clients:

@@ -84,7 +84,7 @@ def setup(_fa_source, _fa_target):
         _logger.info("Creating NFS policy 'replicated-source::nfs_access_policy'.")
         _fa_source.create_nfs_policy(name='replicated-source::nfs_access_policy', disable_user_mapping=False)
         _fa_source.create_nfs_policy_rule(policy_name='replicated-source::nfs_access_policy', client='*', access='no-root-squash',
-                              anonuid='9050', anongid='9050', nfs_version='nfsv4', security='auth_sys',
+                              anonuid='9050', anongid='9050', nfs_version='nfsv3', security='auth_sys',
                               permission='rw')
     except Exception as e:
         _logger.error(f"Error creating policy 'replicated-source::nfs_access_policy'. Error message '{e}'.")
