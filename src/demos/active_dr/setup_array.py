@@ -34,6 +34,13 @@ def setup(_fa_source, _fa_target):
             primary_group=ReferenceWithType(name='Administrators'), 
             password=os.getenv('FA_DEMO_USER_PASSWORD', 'password')
         )
+        _fa_target.create_local_user(
+            name=os.getenv('FA_DEMO_USER_NAME', 'demo'), 
+            uid=1001, 
+            enabled=True,
+            primary_group=ReferenceWithType(name='Administrators'), 
+            password=os.getenv('FA_DEMO_USER_PASSWORD', 'password')
+        )
     except Exception as e:
         _logger.error(f"Error creating local user. Error message '{e}'.")
 
@@ -223,6 +230,7 @@ def cleanup(_fa_source, _fa_target):
     try:
         _logger.info("Deleting local user 'demo'.")
         _fa_source.delete_local_user(name=os.getenv('FA_DEMO_USER_NAME', 'demo'))
+        _fa_target.delete_local_user(name=os.getenv('FA_DEMO_USER_NAME', 'demo'))
     except Exception as e:
         _logger.error(f"Error deleting local user. Error message '{e}'.")
 
