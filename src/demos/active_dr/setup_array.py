@@ -157,7 +157,7 @@ def setup(_fa_source, _fa_target):
         mapped_policies = list(_fa_target.get_pod_replica_link_policy_mappings(source_pod_name='replicated-target', target_pod_name='replicated-source'))
         mapped_policy_names = set(map(lambda pm: pm.remote_policy.name, mapped_policies))
         mapped_policy_mappings = set(map(lambda pm: pm.mapping, mapped_policies))
-        _logger.info("Waiting 10 more seconds for the policies to be replicated.")
+        _logger.info("Waiting for the policies to get replicated.")
         time.sleep(10)
 
 
