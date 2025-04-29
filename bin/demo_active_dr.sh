@@ -86,7 +86,7 @@ sudo mkdir -p /mnt/activedr_target
 sudo chmod 777 /mnt/activedr_target
 
 echo "Mounting the target array file system..."
-sudo mount -t nfs -o nfsvers=4.1 ${FA_DEMO_REMOTE_VIF_HOSTNAME}:/replicated-target /mnt/activedr_target
+sudo mount -t nfs -o nfsvers=4.1 ${FA_DEMO_REMOTE_VIF_HOSTNAME}:/replicated_nfs_export /mnt/activedr_target
 if [ $? -ne 0 ]; then
     echo "Failed to mount the target file system. Please check your network connectivity."
     cleanup_exit

@@ -35,7 +35,7 @@ echo "- Replica link between source and target arrays"
 echo.
 
 echo "Mapping the Z:\ drive to the source array file system..."
-NET USE Z: \\%FA_DEMO_HOSTNAME%\replicated-source /USER:%FA_DEMO_USER_NAME% %FA_DEMO_USER_PASSWORD%
+NET USE Z: \\%FA_DEMO_HOSTNAME%\replicated_smb_share /USER:%FA_DEMO_USER_NAME% %FA_DEMO_USER_PASSWORD%
 if errorlevel 1 (
     echo "Failed to map the Z:\ drive. Please check your credentials and network connectivity."
     goto cleanup
@@ -62,7 +62,7 @@ echo "Press any key when you're ready to check if the file has been replicated t
 pause
 
 echo "Mapping the Y:\ drive to the target array file system..."
-NET USE Y: \\%FA_DEMO_REMOTE_HOSTNAME%\replicated-target /USER:%FA_DEMO_USER_NAME% %FA_DEMO_USER_PASSWORD%
+NET USE Y: \\%FA_DEMO_REMOTE_HOSTNAME%\replicated_smb_share /USER:%FA_DEMO_USER_NAME% %FA_DEMO_USER_PASSWORD%
 if errorlevel 1 (
     echo "Failed to map the Y:\ drive. Please check your credentials and network connectivity."
     goto cleanup
