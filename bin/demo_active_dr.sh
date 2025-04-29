@@ -78,9 +78,6 @@ echo "Waiting for the file to replicate to the target array..."
 echo "This typically takes a few minutes depending on your environment."
 echo
 
-read -n 1 -s -r -p "Press any key when you're ready to check if the file has been replicated to the target array..."
-echo
-
 echo "Creating mount point for target file system..."
 sudo mkdir -p /mnt/activedr_target
 sudo chmod 777 /mnt/activedr_target
