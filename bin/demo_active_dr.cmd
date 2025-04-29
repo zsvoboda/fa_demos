@@ -53,6 +53,8 @@ echo "Test file created successfully on the source array."
 echo "Waiting for the file to replicate to the target array..."
 echo "This typically takes a few minutes depending on your environment."
 
+NET USE Z: /DELETE
+
 echo "Mapping the Y:\ drive to the target array file system..."
 NET USE Y: \\%FA_DEMO_REMOTE_VIF_HOSTNAME%\replicated_smb_share
 if errorlevel 1 (
@@ -74,7 +76,6 @@ echo "Press any key to clean up..."
 pause
 
 :cleanup
-NET USE Z: /DELETE
 NET USE Y: /DELETE
 echo "Cleaning up..."
 python %SRC_DIR%\demos\active_dr\setup_array.py cleanup
