@@ -15,14 +15,14 @@ To install the demo, execute the following scripts:
 On Unix:
 
 ```bash
-./bin/create_venv.sh
+source ./bin/create_venv.sh
 ./bin/install_python_packages.sh
 ```
 
 On Windows:
 
 ```cmd
-.\bin\create_venv.cmd
+call .\bin\create_venv.cmd
 .\bin\install_python_packages.cmd
 ```
 
@@ -35,9 +35,12 @@ Before running a demo, you need to configure your environment.
 All configuration settings for these FlashArray demos are stored in the `.env` file, which should be located in the root directory of this repository. You need to create this file manually. Once created, fill in the correct values for all demo parameters:
 
 ```bash
-FA_DEMO_HOSTNAME=<fa-management-hostname-or-ip>
-FA_DEMO_VIF_HOSTNAME=<fa-vif-hostname-or-ip>
+FA_DEMO_HOSTNAME=<fa-array-management-hostname-or-ip>
+FA_DEMO_REMOTE_HOSTNAME=<fa-target-array-management-hostname-or-ip>
 FA_DEMO_API_TOKEN=<fa-api-token>
+FA_DEMO_REMOTE_API_TOKEN=<fa-target-array-api-token>
+FA_DEMO_VIF_HOSTNAME=<fa-array-vif-hostname-or-ip>
+FA_DEMO_REMOTE_VIF_HOSTNAME=<fa-target-array-vif-hostname-or-ip>
 FA_DEMO_AD_HOSTNAME=<active-directory-hostname-or-ip>
 FA_DEMO_AD_DOMAIN_NAME=<active-directory-domain-name-without-suffix>
 FA_DEMO_AD_DOMAIN_TOP_LEVEL_SUFFIX=<active-directory-suffix>
@@ -48,7 +51,6 @@ FA_DEMO_USER_NAME=<fa-file-services-demo-user-name>
 FA_DEMO_USER_DOMAIN=<fa-file-services-demo-user-domain-name>
 FA_DEMO_USER_PASSWORD=<fa-file-services-demo-user-password>
 FA_DEMO_USE_AD=<true-if-using-active-directory-false-if-using-local-user>
-FA_DEMO_USE_SOCKS5_PROXY=<true-if-using-socks5-proxy-false-if-not-using-socks5-proxy>
 ```
 
 After configuring the `.env` file, activate the virtual environment before starting a demo. Run the following script in each terminal or command line prompt when running multiple demos.
@@ -56,11 +58,11 @@ After configuring the `.env` file, activate the virtual environment before start
 On Unix:
 
 ```bash
-./bin/activate_venv.sh
+source ./bin/activate_venv.sh
 ```
 
 On Windows:
 
 ```cmd
-./bin/activate_venv.cmd
+call ./bin/activate_venv.cmd
 ```
