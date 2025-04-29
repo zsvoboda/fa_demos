@@ -182,8 +182,8 @@ purepolicy nfs rule add   replicated-source::nfs_access_policy   --client '*'   
 Create an SMB access policy allowing all clients:
 
 ```bash
-purepolicy smb create replicated-source::smb_access_policy
-purepolicy smb rule add   replicated-source::smb_access_policy   --client '*'
+purepolicy smb create replicated-source::smb_access_policy 
+purepolicy smb rule add   replicated-source::smb_access_policy   --client '*' --anonymous-access-allowed
 ```
 
 #### Export the Directory Over NFS and SMB

@@ -100,7 +100,7 @@ def setup(_fa_source, _fa_target):
     try:
         _logger.info("Creating SMB policy 'replicated-source::smb_access_policy'.")
         _fa_source.create_smb_policy(name='replicated-source::smb_access_policy')
-        _fa_source.create_smb_policy_rule(policy_name='replicated-source::smb_access_policy', client='*')
+        _fa_source.create_smb_policy_rule(policy_name='replicated-source::smb_access_policy', client='*', anonymous_access_allowed=True)
     except Exception as e:
         _logger.error(f"Error creating policy 'replicated-source::smb_access_policy'. Error message '{e}'.")
 
