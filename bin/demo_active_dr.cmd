@@ -78,5 +78,4 @@ NET USE Z: /DELETE
 NET USE Y: /DELETE
 echo "Cleaning up..."
 python %SRC_DIR%\demos\active_dr\setup_array.py cleanup
-
 echo "Cleanup completed."

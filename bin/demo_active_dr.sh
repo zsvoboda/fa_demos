@@ -19,9 +19,6 @@ cleanup_exit() {
 
     echo "Cleaning up..."
     python3 $SRC_DIR/demos/active_dr/setup_array.py cleanup
-
-    echo "Cleaning up..."
-    python3 $SRC_DIR/demos/active_dr/setup_array.py cleanup
     echo "Cleanup completed."
     exit 1
 }
