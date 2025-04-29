@@ -45,7 +45,6 @@ echo "Creating a test file on the source array file system..."
 echo "This is a test file for Active DR replication." > Z:\test_replication.txt
 if errorlevel 1 (
     echo "Failed to create the test file. Please check your permissions."
-    NET USE Z: /DELETE
     goto cleanup
 )
 
@@ -53,13 +52,6 @@ echo.
 echo "Test file created successfully on the source array."
 echo "Waiting for the file to replicate to the target array..."
 echo "This typically takes a few minutes depending on your environment."
-echo.
-
-NET USE Z: /DELETE
-echo "Source drive unmapped."
-
-echo "Press any key when you're ready to check if the file has been replicated to the target array..."
-pause
 
 echo "Mapping the Y:\ drive to the target array file system..."
 NET USE Y: \\%FA_DEMO_REMOTE_HOSTNAME%\replicated_smb_share /USER:%FA_DEMO_USER_NAME% %FA_DEMO_USER_PASSWORD%
@@ -78,14 +70,12 @@ if exist Y:\test_replication.txt (
     echo "This could be due to replication delay or configuration issues."
 )
 
-NET USE Y: /DELETE
-echo "Target drive unmapped."
-
-echo.
 echo "Press any key to clean up..."
 pause
 
 :cleanup
+NET USE Z: /DELETE
+NET USE Y: /DELETE
 echo "Cleaning up..."
 python %SRC_DIR%\demos\active_dr\setup_array.py cleanup
 
