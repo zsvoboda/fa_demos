@@ -32,90 +32,90 @@ def setup(fa):
 
     # Create groups
     try:
-        ad.create_group('fa_user_quota_demo_bronze_users', 9160, 'Bronze users')
-        ad.create_group('fa_user_quota_demo_silver_users', 9260, 'Silver users')
-        ad.create_group('fa_user_quota_demo_gold_users', 9360, 'Silver users')
+        ad.create_group('bronze_users', 9160, 'Bronze users')
+        ad.create_group('silver_users', 9260, 'Silver users')
+        ad.create_group('gold_users', 9360, 'Silver users')
     except Exception as e:
         _logger.error(f"Error creating groups. Error message '{e}'.")
 
     # Create users
     try:
-        ad.create_user('fa_user_quota_demo_bronze_user', 9160, 'Bronze User')
-        ad.create_user('fa_user_quota_demo_silver_user', 9260, 'Silver User')
-        ad.create_user('fa_user_quota_demo_gold_user', 9360, 'Gold User')
+        ad.create_user('bronze_user', 8160, 'Bronze User')
+        ad.create_user('silver_user', 8260, 'Silver User')
+        ad.create_user('gold_user', 8360, 'Gold User')
     except Exception as e:
         _logger.error(f"Error creating users. Error message '{e}'.")
 
     # Assign users to groups
     try:
-        ad.add_user_to_group('fa_user_quota_demo_bronze_user', 'fa_user_quota_demo_bronze_users')
-        ad.add_user_to_group('fa_user_quota_demo_silver_user', 'fa_user_quota_demo_silver_users')
-        ad.add_user_to_group('fa_user_quota_demo_gold_user', 'fa_user_quota_demo_gold_users')
+        ad.add_user_to_group('bronze_user', 'bronze_users')
+        ad.add_user_to_group('silver_user', 'silver_users')
+        ad.add_user_to_group('gold_user', 'gold_users')
     except Exception as e:
         _logger.error(f"Error assigning users to groups. Error message '{e}'.")
     
     
     # Create filesystem
     try:
-        _logger.info("Creating file system 'fa_user_quota_demo_file_system'.")
-        fa.create_file_system('fa_user_quota_demo_file_system')
+        _logger.info("Creating file system 'file_system'.")
+        fa.create_file_system('file_system')
     except Exception as e:
-        _logger.error(f"Error creating file system 'fa_user_quota_demo_file_system'. Error message '{e}'.")
+        _logger.error(f"Error creating file system 'file_system'. Error message '{e}'.")
 
     # Create NFS policies
     try:
-        _logger.info("Creating NFS policy 'fa_user_quota_demo_nfs_access_policy'.")
-        fa.create_nfs_policy(name='fa_user_quota_demo_nfs_access_policy', disable_user_mapping=False)
-        fa.create_nfs_policy_rule(policy_name='fa_user_quota_demo_nfs_access_policy', client='*', access='no-root-squash',
+        _logger.info("Creating NFS policy 'nfs_access_policy'.")
+        fa.create_nfs_policy(name='nfs_access_policy', disable_user_mapping=False)
+        fa.create_nfs_policy_rule(policy_name='nfs_access_policy', client='*', access='no-root-squash',
                                   nfs_version='nfsv4', security='auth_sys',
                                   permission='rw')
     except Exception as e:
-        _logger.error(f"Error creating policy 'fa_user_quota_demo_smb_access_policy'. Error message '{e}'.")
+        _logger.error(f"Error creating policy 'smb_access_policy'. Error message '{e}'.")
 
     # Create SMB policies
     try:
-        _logger.info("Creating SMB policy 'fa_user_quota_demo_smb_access_policy'.")
-        fa.create_smb_policy(name='fa_user_quota_demo_smb_access_policy')
-        fa.create_smb_policy_rule(policy_name='fa_user_quota_demo_smb_access_policy', client='*')
+        _logger.info("Creating SMB policy 'smb_access_policy'.")
+        fa.create_smb_policy(name='smb_access_policy')
+        fa.create_smb_policy_rule(policy_name='smb_access_policy', client='*')
     except Exception as e:
-        _logger.error(f"Error creating policy 'fa_user_quota_demo_smb_access_policy'. Error message '{e}'.")
+        _logger.error(f"Error creating policy 'smb_access_policy'. Error message '{e}'.")
 
     # Create Default User Quota policy
     try:
-        _logger.info("Creating the user group quota policy 'fa_user_quota_demo_policy'.")
-        fa.create_user_group_quota_policy(name='fa_user_quota_demo_policy')
+        _logger.info("Creating the user group quota policy 'policy'.")
+        fa.create_user_group_quota_policy(name='policy')
         _logger.info("Creating the default user quota policy rule with limit 3MB.")
         fa.create_user_group_quota_policy_rule(
-                policy_name='fa_user_quota_demo_policy',
+                policy_name='policy',
                 quota_limit = 3000 * 1024,
                 quota_type = 'user-default',
                 enforced = True,
                 notifications = ['account'])
         _logger.info("Creating the group quota policy rule for bronze users with limit 30MB.")
-        bronze_group =ad.search_objects(object_class='group', search_filter='(cn=fa_user_quota_demo_bronze_users)', attributes=['distinguishedName'])
+        group = list(ad.search_objects(object_class='group', search_filter='(cn=bronze_users)', attributes=['objectSid']))
         fa.create_user_group_quota_policy_rule(
-            policy_name='fa_user_quota_demo_policy',
+            policy_name='policy',
             quota_limit=30000 * 1024,
             quota_type='user-group-member',
-            quota_subject_sid=bronze_group.sid,
+            quota_subject_sid=group[0]['objectSid'],
             enforced=True,
             notifications=['account'])
         _logger.info("Creating the group quota policy rule for silver users with limit 100MB.")
-        silver_group =ad.search_objects(object_class='group', search_filter='(cn=fa_user_quota_demo_silver_users)', attributes=['distinguishedName'])
+        group = list(ad.search_objects(object_class='group', search_filter='(cn=bronze_users)', attributes=['objectSid']))
         fa.create_user_group_quota_policy_rule(
-            policy_name='fa_user_quota_demo_policy',
+            policy_name='policy',
             quota_limit=100000 * 1024,
             quota_type='user-group-member',
-            quota_subject_sid=silver_group.sid,
+            quota_subject_sid=group[0]['objectSid'],
             enforced=True,
             notifications=['account'])
         _logger.info("Creating the group quota policy rule for gold users with limit 500MB.")
-        gold_group =ad.search_objects(object_class='group', search_filter='(cn=fa_user_quota_demo_gold_users)', attributes=['distinguishedName'])
+        group = list(ad.search_objects(object_class='group', search_filter='(cn=bronze_users)', attributes=['objectSid']))
         fa.create_user_group_quota_policy_rule(
-            policy_name='fa_user_quota_demo_policy',
+            policy_name='policy',
             quota_limit=500000 * 1024,
             quota_type='user-group-member',
-            quota_subject_sid=gold_group.sid,
+            quota_subject_sid=group[0]['objectSid'],
             enforced=True,
             notifications=['account'])
     except Exception as e:
@@ -125,8 +125,8 @@ def setup(fa):
     try:
         _logger.info("Attaching User Group Quota policy to the root managed directory.")
         fa.attach_user_group_quota_policy_to_directory(
-            policy_name='fa_user_quota_demo_policy',
-            managed_directory_name='fa_user_quota_demo_file_system:root'
+            policy_name='policy',
+            managed_directory_name='file_system:root'
         )
     except Exception as e:
         _logger.error(f"Error attaching User Group Quota policy to the root managed directory. Error message '{e}'.")
@@ -134,13 +134,13 @@ def setup(fa):
     # Export managed directory
     try:
         _logger.info("Exporting managed directory over NFS.")
-        fa.attach_nfs_policy_to_directory(policy_name='fa_user_quota_demo_nfs_access_policy',
-                                        managed_directory_name='fa_user_quota_demo_file_system:root',
+        fa.attach_nfs_policy_to_directory(policy_name='nfs_access_policy',
+                                        managed_directory_name='file_system:root',
                                         export_name='user_quota_export')
 
         _logger.info("Exporting managed directory over SMB.")
-        fa.attach_smb_policy_to_directory(policy_name='fa_user_quota_demo_smb_access_policy',
-                                        managed_directory_name='fa_user_quota_demo_file_system:root',
+        fa.attach_smb_policy_to_directory(policy_name='smb_access_policy',
+                                        managed_directory_name='file_system:root',
                                         export_name='user_quota_share')
     except Exception as e:
         _logger.error(f"Error exporting managed directory. Error message '{e}'.")
@@ -155,32 +155,32 @@ def cleanup(fa):
     # Delete exports and policies
     try:
         _logger.info("Deleting NFS and SMB exports.")
-        fa.delete_directory_export(export_name='user_quota_export', policy_name='fa_user_quota_demo_nfs_access_policy')
-        fa.delete_directory_export(export_name='user_quota_share', policy_name='fa_user_quota_demo_smb_access_policy')
+        fa.delete_directory_export(export_name='user_quota_export', policy_name='nfs_access_policy')
+        fa.delete_directory_export(export_name='user_quota_share', policy_name='smb_access_policy')
     except Exception as e:
         _logger.error(f"Error deleting NFS and SMB exports. Error message '{e}'.")
 
     # Delete file system
     try:
-        _logger.info("Destroying file system 'fa_user_quota_demo_file_system'.")
-        fa.destroy_file_system(name='fa_user_quota_demo_file_system')
-        _logger.info("Eradicating file system 'fa_user_quota_demo_file_system'.")
-        fa.eradicate_file_system(name='fa_user_quota_demo_file_system')
+        _logger.info("Destroying file system 'file_system'.")
+        fa.destroy_file_system(name='file_system')
+        _logger.info("Eradicating file system 'file_system'.")
+        fa.eradicate_file_system(name='file_system')
     except Exception as e:
-        _logger.error(f"Error deleting file system 'fa_user_quota_demo_file_system'. Error message '{e}'.")
+        _logger.error(f"Error deleting file system 'file_system'. Error message '{e}'.")
 
     # Delete export policies
     try:
         _logger.info("Deleting NFS and SMB policies.")
-        fa.delete_nfs_policy(name='fa_user_quota_demo_nfs_access_policy')
-        fa.delete_smb_policy(name='fa_user_quota_demo_smb_access_policy')
+        fa.delete_nfs_policy(name='nfs_access_policy')
+        fa.delete_smb_policy(name='smb_access_policy')
     except Exception as e:
         _logger.error(f"Error deleting export policies. Error message '{e}'.")
 
     # Delete User Group Quota Policies
     try:
         _logger.info("Deleting User Group Quota policies.")
-        fa.delete_user_group_quota_policy(name='fa_user_quota_demo_policy')
+        fa.delete_user_group_quota_policy(name='policy')
     except Exception as e:
         _logger.error(f"Error deleting User Group Quota policy. Error message '{e}'.")
 
@@ -200,12 +200,12 @@ def cleanup(fa):
         # Delete AD users & groups
         _logger.info("Deleting AD users and groups.")
         try:
-            ad.delete_object(f'CN=fa_user_quota_demo_bronze_user,CN=Users,{ad.base_dn}', 'User')
-            ad.delete_object(f'CN=fa_user_quota_demo_silver_user,CN=Users,{ad.base_dn}', 'User')
-            ad.delete_object(f'CN=fa_user_quota_demo_gold_user,CN=Users,{ad.base_dn}', 'User')
-            ad.delete_object(f'CN=fa_user_quota_demo_bronze_users,OU=Groups,{ad.base_dn}', 'Group')
-            ad.delete_object(f'CN=fa_user_quota_demo_silver_users,OU=Groups,{ad.base_dn}', 'Group')
-            ad.delete_object(f'CN=fa_user_quota_demo_gold_users,OU=Groups,{ad.base_dn}', 'Group')
+            ad.delete_object(f'CN=bronze_user,CN=Users,{ad.base_dn}', 'User')
+            ad.delete_object(f'CN=silver_user,CN=Users,{ad.base_dn}', 'User')
+            ad.delete_object(f'CN=gold_user,CN=Users,{ad.base_dn}', 'User')
+            ad.delete_object(f'CN=bronze_users,OU=Groups,{ad.base_dn}', 'Group')
+            ad.delete_object(f'CN=silver_users,OU=Groups,{ad.base_dn}', 'Group')
+            ad.delete_object(f'CN=gold_users,OU=Groups,{ad.base_dn}', 'Group')
         except Exception as e:
             _logger.error(f"Error deleting AD users and groups. Error message '{e}'.")
         
