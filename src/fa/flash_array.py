@@ -651,14 +651,14 @@ class FlashArray:
         return handle_response_with_items(r)
 
     def detach_user_group_quota_policy_from_directory(self, managed_directory_name=None, managed_directory_id=None,
-                                              policy_name=None, policy_id=None):
+                                              policy_name=None, policy_id=None, ignore_usage=True):
         """Detach user & group quota policy from managed directory"""
         r = self._client.delete_policies_user_group_quota_members(
             member_names=[managed_directory_name] if managed_directory_name else None,
             member_ids=[managed_directory_id] if managed_directory_id else None,
             policy_names=[policy_name] if policy_name else None,
             policy_ids=[policy_id] if policy_id else None,
-            member_types=['directories'])
+            member_types=['directories'], ignore_usage=ignore_usage)
         return handle_response_with_items(r)
 
     # Snapshot policies
